@@ -16,7 +16,6 @@ class Template extends MY_Controller
 
 
 
-
     public function my_views() 
     {
         $this->loadTemplate("template/my_view");

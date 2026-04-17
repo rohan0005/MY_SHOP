@@ -18,6 +18,9 @@ $route['my-view'] = 'template/my_views';
 $route['home'] = 'index/load_index_page';
 
 
+$route['place-order'] = 'order/place_order';
+
+
 
 
 

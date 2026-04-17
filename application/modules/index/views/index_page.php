@@ -46,11 +46,14 @@
       <td>monitor</td>
       <td>
             <button class="btn btn-primary">View Details</button>
+
         </td>
     </tr>
   </tbody>
 
 </table class="tableBody">
+
+
 
 </body>
 </html>
