@@ -7,12 +7,20 @@ class Index extends MY_Controller{
          parent:: __construct();
         //  $this->load->module("")
         $this->load->module("template");
+        $this->load->helper('url');
+
     }
 
 
     public function load_index_page(){
+        
+    
+        $this->load->view("order/add_order"); //MODAL
+        $this->load->view("index/view-details"); //MODAL
 
         $this->template->loadTemplate("index/index_page");
+        $this->load->view("template/footer");
+
 
 
 
@@ -20,17 +28,6 @@ class Index extends MY_Controller{
     
     }
 
-
-
-    // public function simpleMessage(){
-    //     $content['message'] = "This is a simple message from the message controller";
-
-    //     //---  MODULE_NAME/VIEWS_FILE_NAME, content
-    //     // $this->load->view("message/simple-message", $content);  // LOAD THE simple-message.php file from views.
-
-        
-    
-    // }
 
 }
 
