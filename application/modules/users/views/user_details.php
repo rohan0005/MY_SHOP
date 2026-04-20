@@ -1,3 +1,15 @@
+<!-- <div class="flex">
+
+<button id="latest-two" type="button" class="text-white btn bg-info mb-5">
+                Latest 2 Orders of each User
+</button>
+
+<button id="all-orders" type="button" class="text-white btn bg-warning mb-5">
+                All orders
+</button>
+
+</div> -->
+
 
     
 <table id="userDetailsTable" class="table table-bordered table-striped mx-auto " style="width: 90%;">
@@ -8,7 +20,7 @@
       <th scope="col">First Name</th>
       <th scope="col">Last Name</th>
       <th scope="col">Phone</th>
-      <th scope="col">Created at</th>
+      <th scope="col">Action</th>
     </tr>
   </thead>
 
@@ -42,6 +54,8 @@
                 targets: 2
             }]
         });
+
+        loadUser()
     }
 
 
@@ -72,7 +86,10 @@ function loadUser(){
         item.f_name,
         item.l_name,
         item.phone,
-        item.created_at
+        // item.created_at
+        '<button id="latestOrder" type="button" data-id="' + item.id +'" class="btn btn-success view_latest_order" data-bs-toggle="modal" data-bs-target="#viewLatestTwoOrders">View Latest Orders</button>',
+
+
       ])
 
       });
@@ -86,13 +103,6 @@ function loadUser(){
 
   })
 }
-
-
-
-
-loadUser()
-
-
 
 
 

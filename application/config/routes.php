@@ -55,6 +55,13 @@ $route['delete_order/(:num)'] = 'order/delete_order/$1';
 
 
 
+// GET THE LATEST 2 orders of a single user:
+
+$route['latest_order/(:num)'] = 'order/latest_two_orders/$1';
+
+
+
+
 
 
 

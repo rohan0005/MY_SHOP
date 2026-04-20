@@ -113,7 +113,6 @@
                 {
                     $this->db->delete('`order`', array('id'=>$id));
                     $this->db->delete('`product`', array('id'=>$order->p_id));
-                    $this->db->delete('`users`', array('id'=>$order->user_id));
                     return true;
 
                 }
@@ -127,6 +126,26 @@
 
             // return $this->db->delete('order',array('id'=>$id));
             // return
+        }
+
+
+
+        public function latest_order($id)
+        {
+
+            $this->db->select("`order`.id, `order`.order_date, users.f_name, users.l_name, product.p_name, product.price");
+            $this->db->from("`order`");
+            $this->db->join("users", "users.id = `order`.user_id");
+            $this->db->join("product", "product.id = `order`.p_id");
+
+            $this->db->where("`order`.user_id", $id);
+            $this->db->order_by("order_date", "DESC");
+            $this->db->limit(2);
+
+            $query =$this->db->get();
+
+            return $query->result();
+
         }
         
     }

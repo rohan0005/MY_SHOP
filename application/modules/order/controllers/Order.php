@@ -131,7 +131,7 @@ public function __construct()
 
             }
 
-            
+
             {
                 $this->OrdersModel->delete_order($id);
 
@@ -142,14 +142,26 @@ public function __construct()
                 ]);
                 
             }
+    }
 
 
+    //Controller- list latest 2 orders.
+    public function latest_two_orders($id)
+    {
+        $latest_orders = $this->OrdersModel->latest_order($id);
+
+        echo json_encode([
+            "success" => true,
+            'data' => $latest_orders,
+
+        ]);
 
 
     }
 
 
-}
 
+
+}
 
 ?>

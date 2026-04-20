@@ -17,10 +17,9 @@
         {
 
         $page['page_content'] = 'users/user_details';
-            
         // $this->template->loadTemplate("index/index_page");
         $this->load->view("template/global_template", $page);
-
+        $this->load->view("users/view_latest_two_orders_modal");
         $this->load->view("template/footer");
 
         }
