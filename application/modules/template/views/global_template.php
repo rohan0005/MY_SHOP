@@ -23,11 +23,14 @@
         <a class="navbar-brand" href="<?php echo base_url("users") ?>"><h6 class="text-success">USERS</h6></a>
         <a class="navbar-brand" href="<?php echo base_url("product") ?>"><h6 class="text-success">PRODUCTS</h6></a>
 
+        
+        <?php if($this->uri->segment(1) == '' || $this->uri->segment(1) == 'home')  {?>
         <form class="d-flex">
             <button type="button" class="text-white btn bg-success" data-bs-toggle="modal" data-bs-target="#addModal">
                 ADD ORDER
             </button>
         </form>
+        <?php } ?>
     </div>
 </nav>
 
