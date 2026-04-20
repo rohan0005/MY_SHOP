@@ -39,6 +39,16 @@ $route['get_users_data'] = 'users/get_users_data';
 
 
 
+//product page
+
+$route['product'] = 'product/get_product_page';
+
+
+//all products
+$route['all_product'] = 'product/get_all_product';
+
+
+
 
 
 

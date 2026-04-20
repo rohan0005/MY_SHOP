@@ -123,11 +123,6 @@ function lodeData()
 lodeData();
 
 
-    // $(document).on("click", "#viewDetailsbtn", function(){
-    //     alert("clicked");
-
-    // });
-
 
 </script>
 

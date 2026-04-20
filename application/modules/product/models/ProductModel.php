@@ -2,10 +2,15 @@
 
     class ProductModel extends CI_Model
     {
-        public function edit_product()
+        public function get_products()
         {
+            $query = $this->db->get("product");
+
+            return $query->result();
 
         }
+
+        
     }
 
 

@@ -5,15 +5,40 @@
         public function __construct()
         {
             parent::__construct();
-        } 
-
-        public function Product()
-        {
             $this->load->database();
-            $this->load->library('form_validation');
-            $this->load->library('session');
             $this->load->module('template');
             $this->load->model('ProductModel');
+        } 
+
+        public function get_product_page()
+        {
+            $page['page_content'] = 'product/product_details';
+            $this->load->view("template/global_template", $page);
+            $this->load->view("template/footer");
+            
+        }
+
+
+        public function get_all_product()
+        {
+            $all_products= $this->ProductModel->get_products();
+
+            if($all_products)
+            {
+                echo json_encode([
+                    "success"=> true,
+                    "data"=> $all_products,
+                ]);
+            }
+
+            else
+                {
+                    echo json_encode([
+                    "success"=> false,
+                    "message"=> "NO DATA FOUND",
+                ]);
+
+                }
         }
 
 
