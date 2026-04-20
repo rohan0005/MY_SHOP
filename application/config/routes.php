@@ -49,6 +49,12 @@ $route['all_product'] = 'product/get_all_product';
 
 
 
+//delete orders
+
+$route['delete_order/(:num)'] = 'order/delete_order/$1';
+
+
+
 
 
 

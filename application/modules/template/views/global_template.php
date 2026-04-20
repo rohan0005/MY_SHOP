@@ -18,10 +18,10 @@
 
 <nav class="navbar bg-body-tertiary">
     <div class="container-fluid mx-2">
-        <a class="navbar-brand"><h2 class="text-success">MY SHOP</h2></a>
+        <a href="<?php echo base_url("") ?>" class="navbar-brand"><h2 class="text-success">MY SHOP</h2></a>
 
-        <a class="navbar-brand" href=""><h6 class="text-success">USERS</h6></a>
-        <a class="navbar-brand" href=""><h6 class="text-success">PRODUCTS</h6></a>
+        <a class="navbar-brand" href="<?php echo base_url("users") ?>"><h6 class="text-success">USERS</h6></a>
+        <a class="navbar-brand" href="<?php echo base_url("product") ?>"><h6 class="text-success">PRODUCTS</h6></a>
 
         <form class="d-flex">
             <button type="button" class="text-white btn bg-success" data-bs-toggle="modal" data-bs-target="#addModal">
@@ -30,6 +30,22 @@
         </form>
     </div>
 </nav>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="myToast" class="toast border-0 shadow-lg" role="alert">
+        <div class="toast-header bg-success text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="me-2" viewBox="0 0 16 16">
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+            </svg>
+            <strong class="me-auto">MY SHOP</strong>
+            <small class="text-white opacity-75">Just now</small>
+            <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body d-flex align-items-center gap-2 bg-white" id="toastMessage">
+            <!-- message goes here -->
+        </div>
+    </div>
+</div>
 
 <div
     class="container mt-5"
@@ -54,6 +70,19 @@
 
 
 <script>
+
+
+//toast message
+
+function showToast(message)
+{
+    $('#toastMessage').text(message);
+    var toast = new bootstrap.Toast(document.getElementById("myToast"));
+    toast.show();
+
+}
+
+
 
 var table;
 

@@ -112,6 +112,43 @@ public function __construct()
     }
 
 
+
+    //DELETE ORDER
+    public function delete_order($id)
+    {
+
+        if(empty($id))
+            {
+
+                echo json_encode([
+
+                'success' => false,
+                'message' => "No ID provided",
+
+            ]);
+            
+            return;
+
+            }
+
+            
+            {
+                $this->OrdersModel->delete_order($id);
+
+                echo json_encode([
+
+                    'success' => true,
+                    'message' => "ORDER DELETED!!!!!!",
+                ]);
+                
+            }
+
+
+
+
+    }
+
+
 }
 
 

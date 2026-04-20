@@ -70,13 +70,13 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" disabled class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
-        <!-- <div id="deleteOrder">
+        <div id="deleteOrder">
             
-            <button type="button" id="orderProduct" class="btn btn-primary ">DELETE ORDER</button>
+            <button type="button" id="del-order" class="btn btn-danger ">DELETE ORDER</button>
 
-        </div> -->
+        </div>
 
       </div>
     </div>
@@ -133,6 +133,10 @@
                         $("#statusUpdate").hide(); 
                         $("#updateStatus").hide(); 
                         $("#statusText").text(response.data.status).show();
+                        $("#deleteOrder").show(); 
+
+                        
+
 
                     }
 
@@ -142,6 +146,8 @@
                         $("#updateStatus").show();  
                         $("#statusText").hide(); 
                         $("#view-status").val(response.data.status);
+                        $("#deleteOrder").hide(); 
+
 
 
                     }
@@ -222,6 +228,59 @@ $(document).on("click", ".viewDetailsbtn", function(){
 
 
     });
+  
+    
+
+    $(function(){
+
+    $(document).on("click", "#del-order", function(){
+
+      var orderID = $("#orderID").val();
+
+
+      $.ajax({
+
+        url: "<?php echo base_url("delete_order/") ?>" + orderID,
+        type: "post",
+        dataType: "json",
+
+        data: {
+          id: orderID
+          },
+
+        success: function(response)
+        {
+          if(response.success)
+          {
+            lodeData();
+            //close modal
+            
+            $("#viewDetailsModal").modal("hide");
+
+            showToast(response.message);
+
+          }
+        }
+
+      });
+
+
+
+
+    });
+
+
+    });
+
+
+
+
+
+    // DELETE ORDER
+
+    
+
+    // 
 
 
 

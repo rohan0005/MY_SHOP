@@ -99,6 +99,35 @@
                     return $this->db->update('order', $data);
                 }
         }
+
+
+        public function delete_order($id)
+        {
+            
+            //  Getting the order first to find user_id and p_id
+
+            $this->db->where('id',$id);
+            $order = $this->db->get('`order`')->row();
+
+            if($order)
+                {
+                    $this->db->delete('`order`', array('id'=>$id));
+                    $this->db->delete('`product`', array('id'=>$order->p_id));
+                    $this->db->delete('`users`', array('id'=>$order->user_id));
+                    return true;
+
+                }
+
+            else
+            {
+                return false;
+            }
+
+
+
+            // return $this->db->delete('order',array('id'=>$id));
+            // return
+        }
         
     }
 

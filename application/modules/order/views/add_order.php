@@ -85,7 +85,8 @@
 
             if(response.success)
             {
-                alert(response.message);
+                showToast(response.message);
+
 
                 $("#first-name").val("");
                 $("#last-name").val("");
@@ -99,7 +100,8 @@
             }
             else
             {
-                alert(response.message);
+               showToast(response.message);
+
             }
                  
             },
