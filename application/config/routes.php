@@ -33,6 +33,11 @@ $route['view-details/(:num)'] = 'order/view_oder_details/$1'; // single order de
 $route['update-order-status/(:num)'] = 'order/update_status/$1';   // UPDATING THE STATUS OF ORDER (completed, cancelled......)
 
 
+$route['users'] = 'users/get_users'; // USER PAGE
+
+$route['get_users_data'] = 'users/get_users_data';
+
+
 
 
 

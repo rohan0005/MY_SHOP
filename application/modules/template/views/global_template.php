@@ -19,6 +19,10 @@
 <nav class="navbar bg-body-tertiary">
     <div class="container-fluid mx-2">
         <a class="navbar-brand"><h2 class="text-success">MY SHOP</h2></a>
+
+        <a class="navbar-brand" href=""><h6 class="text-success">USERS</h6></a>
+        <a class="navbar-brand" href=""><h6 class="text-success">PRODUCTS</h6></a>
+
         <form class="d-flex">
             <button type="button" class="text-white btn bg-success" data-bs-toggle="modal" data-bs-target="#addModal">
                 ADD ORDER
@@ -55,7 +59,7 @@ var table;
 
 $(function () {
 
-    // ✅ Prevent reinitialization error
+    // myTable - ALL ORDER DETAILS
     if (!$.fn.DataTable.isDataTable('#myTable')) {
         table = $('#myTable').DataTable({
             pageLength: 10,
@@ -101,8 +105,6 @@ function lodeData()
                         item.l_name,
                         item.p_name,
                         '<button type="button" data-id="' + item.id +'" class="btn btn-primary viewDetailsbtn" data-bs-toggle="modal" data-bs-target="#viewDetailsModal">View Detailsss</button>',
-
-
 
                     ]);
 

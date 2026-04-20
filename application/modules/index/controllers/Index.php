@@ -21,10 +21,6 @@ class Index extends MY_Controller{
         $this->template->loadTemplate("index/index_page");
         $this->load->view("template/footer");
 
-
-
-
-        //this - > MODULE_NAME -> MODULE_METHOD_NAME
     
     }
 

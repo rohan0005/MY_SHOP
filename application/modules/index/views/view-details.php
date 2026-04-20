@@ -49,14 +49,17 @@
             <label for="status" class="col-form-label">Status:</label>
             <!-- drop down -->
              <input type="hidden" name="id" id="orderID" value="">
+            <div id="statusUpdate">
             <select id="view-status" class="form-select">
               <option value="pending">Pending</option>
               <option value="processing">Processing</option>
               <option value="completed">Completed</option>
               <option value="cancelled">Cancelled</option>
             </select>
+             <button type="button" id="updateStatus" class="btn btn-primary mt-2">Update Status</button>
+            </div>
 
-            <button type="button" id="updateStatus" class="btn btn-primary mt-2">Update Status</button>
+                <p id="statusText" class="form-control-plaintext text-danger fw-bold"></p>
 
           </div>
 
@@ -67,8 +70,14 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" id="orderProduct" class="btn btn-primary ">ORDER</button>
+        <button type="button" disabled class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+        <!-- <div id="deleteOrder">
+            
+            <button type="button" id="orderProduct" class="btn btn-primary ">DELETE ORDER</button>
+
+        </div> -->
+
       </div>
     </div>
   </div>
@@ -77,14 +86,9 @@
 <script>
 
 
-    $(document).on("click", ".viewDetailsbtn", function(){
-
-
-    var id = $(this).data("id");
-
-    console.log("ID IS", id)
-
-    $.ajax({
+    function fetchOrderDetails(id)
+    {
+            $.ajax({
 
 
     
@@ -124,6 +128,24 @@
 
                 $("#view-total").text(response.data.total_price);
 
+                if(response.data.status == "cancelled" || response.data.status == "completed")
+                    {
+                        $("#statusUpdate").hide(); 
+                        $("#updateStatus").hide(); 
+                        $("#statusText").text(response.data.status).show();
+
+                    }
+
+                    else
+                    {
+                        $("#statusUpdate").show();
+                        $("#updateStatus").show();  
+                        $("#statusText").hide(); 
+                        $("#view-status").val(response.data.status);
+
+
+                    }
+
 
             }
 
@@ -138,8 +160,19 @@
     }
 
 });
+    }
 
+
+$(document).on("click", ".viewDetailsbtn", function(){
+
+
+    var id = $(this).data("id");
+
+    console.log("ID IS", id)
+
+    fetchOrderDetails(id);
     });
+
 
 
 
@@ -174,8 +207,11 @@
 
                     $("#statusAlert").show().fadeOut(4000);
 
+                    fetchOrderDetails(orderID);
                 }
             }
+
+            
 
 
 

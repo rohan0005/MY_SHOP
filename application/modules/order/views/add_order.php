@@ -95,6 +95,7 @@
                 $("#quantity").val("");
                 
                 $("#addModal").modal("hide");
+                lodeData();
             }
             else
             {
