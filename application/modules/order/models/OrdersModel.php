@@ -6,44 +6,71 @@
         public function place_order()
         {
 
-            $userData = array(
+                // Check if user already exists
 
-                'f_name' => $this->input->post("f_name"),
-                'l_name' => $this->input->post("l_name"),
-                'phone' => $this->input->post("phone"),
-                'created_at' => date("Y-m-d H:i:s"),
+            $phone = $this->input->post("phone");
 
+            $this->db->where("phone", $phone);
+            $existing_user = $this->db->get("users")->row();
 
-            );
+            if($existing_user)
+            {
+                //user exist
+                $user_id = $existing_user->id;
+            }
 
-            $this->db->insert('users', $userData);
-            $user_id = $this->db->insert_id();     // getting the user id after insert.
+            else
+                {
 
-            $productData = array(
-                'p_name' => $this->input->post("product_name"),
-                'price' => $this->input->post("price"),
-                
-            );
+                    $userData = array(
 
-           $this->db->insert('product', $productData);
-           $p_id = $this->db->insert_id();          // getting the product id after insert.
+                        'f_name' => $this->input->post("f_name"),
+                        'l_name' => $this->input->post("l_name"),
+                        'phone' => $this->input->post("phone"),
+                        'created_at' => date("Y-m-d H:i:s"),
 
+                    );
 
-            $orderData = array(
-                'p_id' => $p_id,
-                'user_id' => $user_id,
-                'quantity' => $this->input->post("quantity"),
-                'total_price' => $this->input->post("total_price"),
-                'status' => "pending",
+                    $this->db->insert('users', $userData);
+                    $user_id = $this->db->insert_id();      // getting the USER id after insert.
+                }
 
-            );
-            $this->db->insert('order', $orderData);
+            //FOR PRODUCT
 
-            return true;
+            $p_name = strtolower($this->input->post("product_name"));
+            $this->db->where("p_name", $p_name);
+            $existing_product = $this->db->get("product")->row();
             
-        }
+            if($existing_product) // if product exist
+                {
+                    $p_id = $existing_product->id;  //get id
+
+                }
+
+                else  // if not save the product 
+                    {
+                        $productData = array(
+                            'p_name' => $p_name,
+                            'price'  => $this->input->post("price"),
+
+                        );
+
+                        $this->db->insert("product", $productData);
+                        $p_id = $this->db->insert_id();
+                    }
 
 
+                    // NOW INSERT INTO ORDER TABLE:
+                    $orderData = array(
+                        'p_id' => $p_id,
+                        'user_id' => $user_id,
+                        'quantity' => $this->input->post("quantity"),
+                        'total_price' => $this->input->post("total_price"),
+                        'status' => "pending",
+                    );
+                    $this->db->insert("order", $orderData);
+                    return true;
+                }
 
         public function view_all_orders()
         {

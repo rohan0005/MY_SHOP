@@ -39,7 +39,7 @@
             <p id="view-quantity" class="text-success form-control-plaintext">EXAMPLE QUANTITY</p>
           </div>
           <div class="col-6 mb-3">
-            <label for="order-date" class="col-form-label">Order Date:</label>
+            <label for="order-date" class="col-form-label">User creation Date:</label>
             <p id="view-order-date" class="text-success form-control-plaintext">EXAMPLE ORDER DATE</p>
 
           </div>

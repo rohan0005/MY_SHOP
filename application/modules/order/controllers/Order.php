@@ -41,6 +41,8 @@ public function __construct()
 
         else
         {
+
+            
             //call model function to save the data.
             $this->OrdersModel->place_order();
 
