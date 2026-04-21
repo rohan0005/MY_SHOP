@@ -21,12 +21,20 @@
           </div>
           <div class="mb-1">
             <label for="recipient-name" class="col-form-label">Product Name:</label>
-            <input type="text" class="form-control" id="product-name">
+            <!-- <input type="text" class="form-control" id="product-name"> -->
+
+            <select class="form-select" id="product-name" >
+              <option selected>PRODUCT NAME</option>
+            </select>
+
+
+
           </div>
           <div class="mb-1">
             <label for="recipient-name" class="col-form-label">Price:</label>
-            <input type="number" min="1" class="form-control" id="price">
+            <input disabled type="number" min="1" class="form-control" id="price" value="">
           </div>
+
           <div class="mb-1">
             <label for="recipient-name" class="col-form-label">Quantity:</label>
             <input type="number" min="1" class="form-control" id="quantity">
@@ -51,13 +59,46 @@
 
 <script>
 
- 
+  $.ajax({
+    url: "<?php echo base_url("all_product") ?>",
+    type: "GET",
+    dataType: "json",
+
+    success: function(response)
+    {
+      console.log("ALLL PRODUCTs", response.data);
+
+      $.each(response.data, function(index, item){
+        
+          
+        $("#product-name").append
+        (
+          '<option   value="'+item.id+'" data-price="'+ item.price +'">' + item.p_name + '</option>',
+        )
+
+      });
+      
+    }
+
+  });
+
+
+  // SHOW PRICE ACCORDING TO PRODUCT SELECTED
+  $("#product-name").change(function(){
+
+      var selectedPrice = $(this).find("option:selected").data("price");
+      $("#price").val(selectedPrice);
+
+  });
+
+
+  
     $("#orderProduct").click(function(){
 
         var first_name = $("#first-name").val();
             var last_name = $("#last-name").val();
             var phone_number = $("#phone_number").val();
-            var product_name = $("#product-name").val();
+            var product_id = $("#product-name").val();
             var price = parseFloat($("#price").val());
             var quantity = parseInt($("#quantity").val());
             var total_price = price * quantity;
@@ -72,7 +113,7 @@
                 f_name : first_name,
                 l_name: last_name,
                 phone: phone_number,
-                product_name: product_name,
+                product_id: product_id,
                 price: price,
                 quantity: quantity,
                 total_price: total_price,

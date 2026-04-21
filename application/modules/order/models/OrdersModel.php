@@ -37,28 +37,30 @@
 
             //FOR PRODUCT
 
-            $p_name = strtolower($this->input->post("product_name"));
-            $this->db->where("p_name", $p_name);
-            $existing_product = $this->db->get("product")->row();
+            // $p_name = strtolower($this->input->post("product_name"));
+            // $this->db->where("p_name", $p_name);
+            // $existing_product = $this->db->get("product")->row();
             
-            if($existing_product) // if product exist
-                {
-                    $p_id = $existing_product->id;  //get id
+            // if($existing_product) // if product exist
+            //     {
+            //         $p_id = $existing_product->id;  //get id
 
-                }
+            //     }
 
-                else  // if not save the product 
-                    {
-                        $productData = array(
-                            'p_name' => $p_name,
-                            'price'  => $this->input->post("price"),
+            //     else  // if not save the product 
+            //         {
+            //             $productData = array(
+            //                 'p_name' => $p_name,
+            //                 'price'  => $this->input->post("price"),
 
-                        );
+            //             );
 
-                        $this->db->insert("product", $productData);
-                        $p_id = $this->db->insert_id();
-                    }
+            //             $this->db->insert("product", $productData);
+            //             $p_id = $this->db->insert_id();
+            //         }
 
+                    
+                    $p_id = $this->input->post("product_id");
 
                     // NOW INSERT INTO ORDER TABLE:
                     $orderData = array(
@@ -68,7 +70,7 @@
                         'total_price' => $this->input->post("total_price"),
                         'status' => "pending",
                     );
-                    $this->db->insert("order", $orderData);
+                    $this->db->insert("orders", $orderData);
                     return true;
                 }
 
@@ -76,13 +78,13 @@
         {
 
 
-            $this->db->select('order.id, order.quantity, order.total_price, order.status, users.f_name, users.l_name, users.phone, product.p_name, product.price');
+            $this->db->select('orders.id, orders.quantity, orders.total_price, orders.status, users.f_name, users.l_name, users.phone, product.p_name, product.price');
 
-            $this->db->from('order');
+            $this->db->from('orders');
 
-            $this->db->join('users', 'users.id = order.user_id');
+            $this->db->join('users', 'users.id = orders.user_id');
 
-            $this->db->join('product', 'product.id = order.p_id');
+            $this->db->join('product', 'product.id = orders.p_id');
 
             $query = $this->db->get();
 
@@ -100,11 +102,11 @@
 
         public function get_single_order_by_id($id)
         {
-            $this->db->select("`order`.id, `order`.quantity ,`order`.total_price,`order`.status, users.f_name, users.l_name, users.created_at,  users.phone, product.p_name, product.price ");
-            $this->db->from("`order`");
-            $this->db->join("users", "users.id = `order`.user_id ");
-            $this->db->join("product", "product.id = `order`.p_id ");
-            $this->db->where("`order`.id", $id);
+            $this->db->select("`orders`.id, `orders`.quantity ,`orders`.total_price,`orders`.status, users.f_name, users.l_name, users.created_at,  users.phone, product.p_name, product.price ");
+            $this->db->from("`orders`");
+            $this->db->join("users", "users.id = `orders`.user_id ");
+            $this->db->join("product", "product.id = `orders`.p_id ");
+            $this->db->where("`orders`.id", $id);
 
             $query = $this->db->get();
 
@@ -123,7 +125,7 @@
             if($id)
                 {
                     $this->db->where("id", $id);
-                    return $this->db->update('order', $data);
+                    return $this->db->update('orders', $data);
                 }
         }
 
@@ -134,11 +136,11 @@
             //  Getting the order first to find user_id and p_id
 
             $this->db->where('id',$id);
-            $order = $this->db->get('`order`')->row();
+            $order = $this->db->get('`orders`')->row();
 
             if($order)
                 {
-                    $this->db->delete('`order`', array('id'=>$id));
+                    $this->db->delete('`orders`', array('id'=>$id));
                     $this->db->delete('`product`', array('id'=>$order->p_id));
                     return true;
 
@@ -160,12 +162,12 @@
         public function latest_order($id)
         {
 
-            $this->db->select("`order`.id, `order`.order_date, users.f_name, users.l_name, product.p_name, product.price");
-            $this->db->from("`order`");
-            $this->db->join("users", "users.id = `order`.user_id");
-            $this->db->join("product", "product.id = `order`.p_id");
+            $this->db->select("`orders`.id, `orders`.quantity, `orders`.order_date, users.f_name, users.l_name, product.p_name, product.price");
+            $this->db->from("`orders`");    
+            $this->db->join("users", "users.id = `orders`.user_id");
+            $this->db->join("product", "product.id = `orders`.p_id");
+            $this->db->where("`orders`.user_id", $id);
 
-            $this->db->where("`order`.user_id", $id);
             $this->db->order_by("order_date", "DESC");
             $this->db->limit(2);
 

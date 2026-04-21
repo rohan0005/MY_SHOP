@@ -1,5 +1,5 @@
 <div class="modal fade" id="viewLatestTwoOrders" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">LATEST 2 ORDERS of a Customer:</h1>
@@ -14,6 +14,9 @@
                     <th>ID</th>
                     <th>First Name</th>
                     <th>Last Name</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
                     <th>Order Date</th>
                 </tr>
             </thead>
@@ -38,13 +41,20 @@
 
 <script>
 
-    var LatestOrders = $('#LatestOrders').DataTable({
+    var LatestOrders;
+
+
+    $(function(){
+
+
+    LatestOrders = $('#LatestOrders').DataTable({
         "searching": false,
         "lengthChange": false,
         "paging": false,
         "info": false,
     });
 
+    });
     
     $(document).on("click", ".view_latest_order", function(){
 
@@ -62,7 +72,7 @@
             {
                 LatestOrders.clear();
                 // SHOW DATA
-                // console.log("RESPONSE DATA ISSSSSSS:",response.data);
+                console.log("RESPONSE DATA ISSSSSSS:",response.data);
 
                 $.each(response.data, function(index,item){
                         console.log(item); 
@@ -72,11 +82,15 @@
                         item.id,
                         item.f_name,
                         item.l_name,
+                        item.p_name,
+                        item.quantity,
+                        item.price,
                         item.order_date,
                     ]);
-                    LatestOrders.draw();
 
-                });
+                }); 
+                LatestOrders.draw();
+
 
             }
         },

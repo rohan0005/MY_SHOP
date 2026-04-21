@@ -24,9 +24,11 @@ public function __construct()
         $this->form_validation->set_rules('f_name', 'First Name', 'required');
         $this->form_validation->set_rules('l_name', 'Last Name', 'required');
         $this->form_validation->set_rules('phone', 'Phone Number', 'required|exact_length[10]|numeric');
-        $this->form_validation->set_rules('product_name', 'Product Name', 'required');
+        // $this->form_validation->set_rules('product_name', 'Product Name', 'required');
         $this->form_validation->set_rules('price', 'Price', 'required|numeric');
         $this->form_validation->set_rules('quantity', 'Quantity', 'required|integer');
+        $this->form_validation->set_rules('product_id', 'Product ID', 'required|integer');
+
 
         if ($this->form_validation->run() == FALSE)
         {
