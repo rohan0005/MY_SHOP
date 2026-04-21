@@ -1,3 +1,7 @@
+<?php 
+include(APPPATH . "modules/product/views/add_product_modal.php");
+ ?>
+
 <table id="productDetailsTable" class="table table-bordered table-striped mx-auto " style="width: 90%;">
 
 <thead>
@@ -12,9 +16,6 @@
 
     <!-- SHOULD BE EMPTY -->
 
-
-
-    
     
   </tbody>
 
@@ -27,19 +28,62 @@
 
      $(function(){
 
-  //ALL USER TABLE
-   if (!$.fn.DataTable.isDataTable('#productDetailsTable')) {
-        productTable = $('#productDetailsTable').DataTable({
-            pageLength: 10,
-            order: [[0, "asc"]],
-            columnDefs: [{
-                orderable: false,
-                targets: 2
-            }]
-        });
-    }
+        //ALL USER TABLE
+        if (!$.fn.DataTable.isDataTable('#productDetailsTable')) {
+                productTable = $('#productDetailsTable').DataTable({
+                    pageLength: 10,
+                    order: [[0, "asc"]],
+                    columnDefs: [{
+                        orderable: false,
+                        targets: 2
+                    }]
+                });
+            }
+            
+        
+        // LOADING ALL THE PRODUCT IN THE PAGE
+        loadProduct();
+            
+        })
+
+
     
- 
+   // ADDING NEW PRODUCT  
+
+
+    $("#addProductBtn").click(function(){
+
+    var productName = $("#productName").val();
+    var productPrice = $("#productPrice").val();
+
+
+
+        $.ajax({
+        url:  "<?php  echo base_url("add_product")?>",
+        type:   "POST",
+        dataType: "json",
+
+        data: {
+            productName : productName,
+            productPrice : productPrice,
+        },
+
+        success: function(response)
+        {
+            
+            $("#addProductModal").modal("hide");
+
+            loadProduct()
+            showToast(response.message);
+
+        }
+
+
+    });
+    });
+
+
+function loadProduct(){
 
   $.ajax({
 
@@ -50,8 +94,14 @@
     success: function(response){
         if(response.success)
         {
+            // console.log("all products", response.data), 
+
+
 
             // loop to fetch all products:
+
+            productTable.clear();
+
 
             $.each(response.data, function(index, item){
 
@@ -73,7 +123,7 @@
 
   });
 
-   });
+}
 
 
 </script>

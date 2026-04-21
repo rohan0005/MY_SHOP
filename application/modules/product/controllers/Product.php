@@ -8,6 +8,8 @@
             $this->load->database();
             $this->load->module('template');
             $this->load->model('ProductModel');
+            $this->load->library('form_validation');
+            $this->load->library('session');
         } 
 
         public function get_product_page()
@@ -39,6 +41,35 @@
                 ]);
 
                 }
+        }
+
+        // ADD PRODUCT
+        public function add_new_product()
+        {
+           
+
+            $this->form_validation->set_rules('productName', 'Product Name', 'required');
+            $this->form_validation->set_rules('productPrice', 'Price', 'required');
+
+            if ($this->form_validation->run() == FALSE)
+                {
+                    echo json_encode([
+                            'success'=> false,
+                            'message'=> strip_tags(validation_errors()),
+                    ]);
+                }
+
+            else
+                {
+                    $this->ProductModel->add_product();
+
+                    echo json_encode([
+                            'success'=> true,
+                            'message'=> "New Product Added!!",
+                    ]);
+                }
+
+            
         }
 
 

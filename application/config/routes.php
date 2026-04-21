@@ -61,6 +61,12 @@ $route['latest_order/(:num)'] = 'order/latest_two_orders/$1';
 
 
 
+//add new product
+
+$route['add_product'] = 'product/add_new_product';
+
+
+
 
 
 

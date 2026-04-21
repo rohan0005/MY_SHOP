@@ -24,13 +24,31 @@
         <a class="navbar-brand" href="<?php echo base_url("product") ?>"><h6 class="text-success">PRODUCTS</h6></a>
 
         
-        <?php if($this->uri->segment(1) == '' || $this->uri->segment(1) == 'home')  {?>
         <form class="d-flex">
+        <?php if($this->uri->segment(1) == '' || $this->uri->segment(1) == 'home')  {?>
+
             <button type="button" class="text-white btn bg-success" data-bs-toggle="modal" data-bs-target="#addModal">
                 ADD ORDER
             </button>
+
+            
+
+        <?php 
+        
+        } 
+
+            elseif($this->uri->segment(1) == 'product')
+            { ?>
+
+                <button type="button" class="text-white btn bg-success" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                    ADD PRODUCT
+                </button>
+
+
+            <?php } ?>
+        
+
         </form>
-        <?php } ?>
     </div>
 </nav>
 
