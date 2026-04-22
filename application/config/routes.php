@@ -77,3 +77,8 @@ $route['add_product'] = 'product/add_new_product';
 
 
 
+
+
+
+
+

@@ -1,6 +1,11 @@
 <?php 
 include(APPPATH . "modules/product/views/add_product_modal.php");
+include(APPPATH . "modules/product/views/view_product_image_modal.php");
+
  ?>
+
+<?php echo isset($error)? $error: ''; ?>
+
 
 <table id="productDetailsTable" class="table table-bordered table-striped mx-auto " style="width: 90%;">
 
@@ -9,6 +14,8 @@ include(APPPATH . "modules/product/views/add_product_modal.php");
       <th scope="col">id</th>
       <th scope="col">Product Name</th>
       <th scope="col">Price</th>
+      <th scope="col">IMAGE</th>
+
     </tr>
   </thead>
 
@@ -51,10 +58,26 @@ include(APPPATH . "modules/product/views/add_product_modal.php");
    // ADDING NEW PRODUCT  
 
 
-    $("#addProductBtn").click(function(){
+    $("#addProductBtn").click(function(e){
 
-    var productName = $("#productName").val();
-    var productPrice = $("#productPrice").val();
+        e.preventDefault(); // Prevent form submission/page reload
+
+
+        console.log($("#productName").val());
+        console.log($("#productPrice").val());
+        console.log($("#productImage")[0].files[0]);
+
+        var productName = $("#productName").val();
+        var productPrice = $("#productPrice").val();
+
+        var formData = new FormData(); // FormData for file upload
+
+        formData.append("productName", productName);
+        formData.append("productPrice", productPrice);
+
+        var file = $("#productImage")[0].files[0];
+
+        formData.append("productImage", file); 
 
 
 
@@ -63,21 +86,26 @@ include(APPPATH . "modules/product/views/add_product_modal.php");
         type:   "POST",
         dataType: "json",
 
-        data: {
-            productName : productName,
-            productPrice : productPrice,
-        },
+        data: formData,
+
+        contentType: false,
+        processData: false,
 
         success: function(response)
         {
+            console.log("5 - success:", response); 
+
             
             $("#addProductModal").modal("hide");
 
             loadProduct()
             showToast(response.message);
 
-        }
+        },
 
+        error: function(xhr, status, error){
+            console.log("error:", xhr.responseText);
+        }
 
     });
     });
@@ -109,6 +137,8 @@ function loadProduct(){
                 item.id,
                 item.p_name,
                 item.price,
+                '<button type="button" data-id="' + item.id +'" class="btn btn-info text-white view-product-image" data-bs-toggle="modal" data-bs-target="#viewImageModal">View Product Image</button>',
+
             ])
 
             });
@@ -125,5 +155,54 @@ function loadProduct(){
 
 }
 
+$(document).on("click", ".view-product-image", function(){
+
+    $('.imageArea').empty();
+    $('.productName').empty();
+
+    var id = $(this).data("id");
+
+    $.ajax({
+
+    url: "<?php echo base_url("all_product") ?>",
+    type: "GET",
+    dataType: "json",
+
+    success: function(response){
+        if(response.success)
+        {
+            $.each(response.data, function(index, item)
+            {
+                if(item.id == id )
+                {
+
+                    $('.productName').append(
+                        '<h2> '+ item.p_name +' </h2>',
+                        '<br />'
+                        
+                    );
+                    
+
+                    $('.imageArea').append(
+                    '<img src="./uploads/'+ item.image +'" alt="img" class="img-thumbnail">'
+                    )
+                    
+                }
+
+
+            });
+
+            
+
+
+
+        }
+
+    }
+
+    });
+    
+
+});
 
 </script>
