@@ -25,11 +25,6 @@ public function __construct()
         $this->form_validation->set_rules('f_name', 'First Name', 'required');
         $this->form_validation->set_rules('l_name', 'Last Name', 'required');
         $this->form_validation->set_rules('phone', 'Phone Number', 'required|exact_length[10]|numeric');
-        // $this->form_validation->set_rules('product_name', 'Product Name', 'required');
-        $this->form_validation->set_rules('price', 'Price', 'required|numeric');
-        $this->form_validation->set_rules('quantity', 'Quantity', 'required|integer');
-        $this->form_validation->set_rules('product_id', 'Product ID', 'required|integer');
-        
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
 
 
@@ -56,17 +51,25 @@ public function __construct()
             $message = "<h1>Your order has been placed!</h1>";
             
             //call model function to save the data.
-            $this->OrdersModel->place_order();
+            $result = $this->OrdersModel->place_order();
             // send_email();
             // send_email($user_email, $subject, $message);
-            $this->send_email($user_email, $subject, $message);
 
+           if ($result) {
+                
+                $this->send_email($user_email, $subject, $message);
 
-            echo json_encode([
-                'success' => true,
-                'message' => "Order Placed Successfully!!!!"
-            ]);
-
+                echo json_encode([
+                    'success' => true,
+                    'message' => "Order Placed Successfully!!!!"
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => "Database error occurred"
+                ]);
+            }
+            
         }
 
     }

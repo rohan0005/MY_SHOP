@@ -5,7 +5,30 @@
        
         public function place_order()
         {
+            $products = $this->input->post('products');
 
+
+            $this->db->trans_start();   // It allows to group multiple database queries together so that they either all succeed or all fail as a single unit.
+
+            $grand_total = 0;
+            
+            if (!empty($products) && is_array($products)) {
+
+            foreach($products as $product)
+                {
+                    $product_id = (int) $product['id'];
+                    $quantity = (int) $product['quantity'];
+                    $price = (float) $product['price'];
+
+                    if ($quantity > 0 && $price >= 0) {
+                        $grand_total += $quantity * $price;
+                    }
+
+
+
+                }
+            }
+            
                 // Check if user already exists
 
             $phone = $this->input->post("phone");
@@ -39,31 +62,75 @@
 
 
                     
-                    $p_id = $this->input->post("product_id");
-
                     // NOW INSERT INTO ORDER TABLE:
                     $orderData = array(
-                        'p_id' => $p_id,
+                        // 'p_id' => $p_id,
                         'user_id' => $user_id,
-                        'quantity' => $this->input->post("quantity"),
-                        'total_price' => $this->input->post("total_price"),
+                        // 'quantity' => x$this->input->post("quantity"),
+                        'total_price' => $grand_total,
                         'status' => "pending",
                     );
                     $this->db->insert("orders", $orderData);
+
+                    //get the id of orders
+                    $order_ID = $this->db->insert_id();
+
+
+
+                    if (!empty($products) && is_array($products)) {
+
+                        foreach($products as $product)
+                            {
+                                $product_id = (int) $product['id'];
+                                $quantity = (int) $product['quantity'];
+                                $price = (float) $product['price'];
+                                $total = $quantity * $price;
+
+
+                                $itemData = 
+                                [
+                                    'order_id' => $order_ID,
+                                    'p_id' => $product_id,
+                                    'price' => $total,
+                                    'quantity' => $quantity,
+                                ];
+
+                                $this->db->insert('order_items', $itemData);
+
+
+                            }
+                        }
+
+
+                    $this->db->trans_complete();
+
+
+                    if ($this->db->trans_status() === FALSE) {
+                        $error = $this->db->error();
+                            print_r($error);   // TEMPORARY DEBUG
+                            exit;
+
+                            return false;
+                    }
+
                     return true;
+
+
                 }
 
         public function view_all_orders()
         {
 
-
-            $this->db->select('orders.id, orders.quantity, orders.total_price, orders.status, users.f_name, users.l_name, users.phone, product.p_name, product.price');
+            $this->db->select('orders.id, order_items.quantity, orders.total_price, orders.status, users.f_name, users.l_name, users.phone, product.p_name, product.price');
 
             $this->db->from('orders');
 
             $this->db->join('users', 'users.id = orders.user_id');
 
-            $this->db->join('product', 'product.id = orders.p_id');
+            $this->db->join('order_items', 'order_items.order_id = orders.id');
+
+            $this->db->join('product', 'product.id = order_items.p_id');
+
 
             $query = $this->db->get();
 
