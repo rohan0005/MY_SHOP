@@ -27,7 +27,9 @@
                         'f_name' => $this->input->post("f_name"),
                         'l_name' => $this->input->post("l_name"),
                         'phone' => $this->input->post("phone"),
-                        'created_at' => date("Y-m-d H:i:s"),
+                        'created_at' => date("Y-m-d H:i:s"), 
+                        'email' => $this->input->post("email"),
+
 
                     );
 
@@ -35,29 +37,6 @@
                     $user_id = $this->db->insert_id();      // getting the USER id after insert.
                 }
 
-            //FOR PRODUCT
-
-            // $p_name = strtolower($this->input->post("product_name"));
-            // $this->db->where("p_name", $p_name);
-            // $existing_product = $this->db->get("product")->row();
-            
-            // if($existing_product) // if product exist
-            //     {
-            //         $p_id = $existing_product->id;  //get id
-
-            //     }
-
-            //     else  // if not save the product 
-            //         {
-            //             $productData = array(
-            //                 'p_name' => $p_name,
-            //                 'price'  => $this->input->post("price"),
-
-            //             );
-
-            //             $this->db->insert("product", $productData);
-            //             $p_id = $this->db->insert_id();
-            //         }
 
                     
                     $p_id = $this->input->post("product_id");

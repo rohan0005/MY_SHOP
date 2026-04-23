@@ -15,6 +15,7 @@ public function __construct()
         $this->load->database();
         $this->load->library('form_validation');
         $this->load->library('session');
+        $this->load->library('email');
         // $this->load->helper('url');
     }
 
@@ -28,8 +29,11 @@ public function __construct()
         $this->form_validation->set_rules('price', 'Price', 'required|numeric');
         $this->form_validation->set_rules('quantity', 'Quantity', 'required|integer');
         $this->form_validation->set_rules('product_id', 'Product ID', 'required|integer');
+        
+        $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
 
 
+        
         if ($this->form_validation->run() == FALSE)
         {
             $this->session->set_flashdata("errors", validation_errors());
@@ -43,10 +47,20 @@ public function __construct()
 
         else
         {
+            
+            // $user_email = $this->form_validation->set_rules('email', 'Email', 'required');
+            $user_email = $this->input->post('email');
 
+            
+            $subject = "Order Placed!!";
+            $message = "<h1>Your order has been placed!</h1>";
             
             //call model function to save the data.
             $this->OrdersModel->place_order();
+            // send_email();
+            // send_email($user_email, $subject, $message);
+            $this->send_email($user_email, $subject, $message);
+
 
             echo json_encode([
                 'success' => true,
@@ -165,6 +179,50 @@ public function __construct()
 
 
 
+    public function send_email($user_email, $subject, $message)
+    {
+        try {
+        $my_gmail = 'jr8484511@gmail.com';
+
+        $config = array(
+            'protocol'   => 'smtp',
+            'smtp_host'  => 'smtp.gmail.com',
+            'smtp_port'  => 587,
+            'smtp_user'  => $my_gmail,
+            'smtp_pass'  => 'opnx xooj tnqj quwo', // app password
+            'smtp_crypto'=> 'tls',
+            'mailtype'   => 'html',
+            'charset'    => 'utf-8',
+            'newline'    => "\r\n",
+            'crlf'       => "\r\n",
+        );
+
+        $this->email->initialize($config);
+        $this->email->clear(); 
+
+        $this->email->from($my_gmail, 'MY SHOP');
+        $this->email->to((string)$user_email); 
+        $this->email->subject($subject);
+        $this->email->message($message);
+
+
+        if(!$this->email->send()){
+            echo $this->email->print_debugger();
+            exit;
+        }
+
+        if(!$this->email->send()){
+            log_message('error', $this->email->print_debugger());
+        }
+
+        }
+
+        catch(Exception $e) {
+        log_message('error', 'Email error: ' . $e->getMessage());
+        }
+
+
+    }
 
 }
 

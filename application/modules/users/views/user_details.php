@@ -20,6 +20,7 @@
       <th scope="col">First Name</th>
       <th scope="col">Last Name</th>
       <th scope="col">Phone</th>
+      <th scope="col">Email</th>
       <th scope="col">Action</th>
     </tr>
   </thead>
@@ -86,6 +87,7 @@ function loadUser(){
         item.f_name,
         item.l_name,
         item.phone,
+        item.email,
         // item.created_at
         '<button id="latestOrder" type="button" data-id="' + item.id +'" class="btn btn-success view_latest_order" data-bs-toggle="modal" data-bs-target="#viewLatestTwoOrders">View Latest Orders</button>',
 
