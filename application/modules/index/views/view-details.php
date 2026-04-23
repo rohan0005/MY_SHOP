@@ -24,7 +24,7 @@
             <p id="view-phone_number" class="text-success form-control-plaintext">EXAMPLE PHONE NUMBER</p>
 
           </div>
-          <div class="col-6 mb-3">
+          <!-- <div class="col-6 mb-3">
             <label for="product-name" class="col-form-label">Product Name:</label>
             <p id="view-product-name" class="text-success form-control-plaintext">EXAMPLE PRODUCT NAME</p>
 
@@ -37,12 +37,34 @@
           <div class="col-6 mb-3">
             <label for="quantity" class="col-form-label">Quantity:</label>
             <p id="view-quantity" class="text-success form-control-plaintext">EXAMPLE QUANTITY</p>
-          </div>
+          </div> -->
           <div class="col-6 mb-3">
             <label for="order-date" class="col-form-label">User creation Date:</label>
             <p id="view-order-date" class="text-success form-control-plaintext">EXAMPLE ORDER DATE</p>
 
           </div>
+
+          <table class="table table-bordered table-striped mx-auto ">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody">
+                </tbody>
+          </table>
+
+          <br />
+
+
+
+
+
+
+
+
 
           <!-- action - pending, completed or cancelled -->
           <div class="col-6 mb-3">
@@ -103,40 +125,46 @@
         {
             if (response.success)
             {
-                console.log("RESPONSE IS: ")
-                console.log(response.data);
-                console.log(typeof response.success);
+                var order = response.data;
 
-                // $("#view-first-name").text("ROHAN");
+                if (order.length > 0)
 
-                $("#orderID").val(response.data.id);
+                {
+                console.log("DATA", order)
+                $("#orderID").val(order[0].id);
+                $("#view-first-name").text(order[0].f_name);
+                $("#view-last-name").text(order[0].l_name);
+                $("#view-phone_number").text(order[0].phone);
+                $("#view-order-date").text(order[0].created_at);
+                $("#view-total").text(order[0].total_price);
+                
+                $("#view-status").val(order[0].status); 
 
+                }
 
-                $("#view-first-name").text(response.data.f_name);
-                $("#view-last-name").text(response.data.l_name);
-                $("#view-phone_number").text(response.data.phone);
+                $("#productsTableBody").html(""); // Clear previous product rows
 
-                $("#view-product-name").text(response.data.p_name);
+                order.forEach(function(item){
 
-                $("#view-price").text(response.data.price);
+                // console.log("PRODEUC NAME: ", item.p_name)
+                var row = `
+                <tr>
+                    <td>${item.p_name}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.price}</td>
+                </tr>
+                  `;
 
-                $("#view-quantity").text(response.data.quantity);
+                  $("#productsTableBody").append(row);
 
-                $("#view-order-date").text(response.data.created_at);
+                })
 
-                $("#view-status").val(response.data.status);
-
-                $("#view-total").text(response.data.total_price);
-
-                if(response.data.status == "cancelled" || response.data.status == "completed")
+                  if(order[0].status === "cancelled" || order[0].status === "completed")
                     {
                         $("#statusUpdate").hide(); 
                         $("#updateStatus").hide(); 
-                        $("#statusText").text(response.data.status).show();
+                        $("#statusText").text(order[0].status).show();
                         $("#deleteOrder").show(); 
-
-                        
-
 
                     }
 
@@ -145,11 +173,8 @@
                         $("#statusUpdate").show();
                         $("#updateStatus").show();  
                         $("#statusText").hide(); 
-                        $("#view-status").val(response.data.status);
+                        $("#view-status").val(order[0].status);
                         $("#deleteOrder").hide(); 
-
-
-
                     }
 
 

@@ -148,15 +148,16 @@
 
         public function get_single_order_by_id($id)
         {
-            $this->db->select("`orders`.id, `orders`.quantity ,`orders`.total_price,`orders`.status, users.f_name, users.l_name, users.created_at,  users.phone, product.p_name, product.price ");
+            $this->db->select("`orders`.id, `orders`.total_price ,`orders`.status, users.f_name, users.l_name, users.created_at,  users.phone, order_items.quantity, order_items.price, product.p_name ");
             $this->db->from("`orders`");
             $this->db->join("users", "users.id = `orders`.user_id ");
-            $this->db->join("product", "product.id = `orders`.p_id ");
+            $this->db->join("order_items", "order_items.order_id = orders.id");
+            $this->db->join("product", "product.id = `order_items`.p_id ");
             $this->db->where("`orders`.id", $id);
 
             $query = $this->db->get();
 
-            return $query->row();
+            return $query->result();    //return restul not row!!!!!!!!
         
             }
 
