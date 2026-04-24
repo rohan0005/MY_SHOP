@@ -5,11 +5,11 @@
         <h1 class="modal-title fs-5" id="exampleModalLabel">Order Details</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-                    <div id="statusAlert" class="alert alert-primary" role="alert" style="display:none;">
-                <P>Status Updated Successfully!</P>
-                </div>
+      <div id="statusAlert" class="alert alert-primary" role="alert" style="display:none;">
+        <P>Status Updated Successfully!</P>
+      </div>
       <div class="modal-body">
-         <div class="row">
+        <div class="row">
           <div class="col-6 mb-3">
             <label for="first-name" class="col-form-label">First Name:</label>
             <p id="view-first-name" class="text-success form-control-plaintext"></p>
@@ -24,20 +24,7 @@
             <p id="view-phone_number" class="text-success form-control-plaintext">EXAMPLE PHONE NUMBER</p>
 
           </div>
-          <!-- <div class="col-6 mb-3">
-            <label for="product-name" class="col-form-label">Product Name:</label>
-            <p id="view-product-name" class="text-success form-control-plaintext">EXAMPLE PRODUCT NAME</p>
 
-          </div>
-          <div class="col-6 mb-3">
-            <label for="price" class="col-form-label">Price:</label>
-            <p id="view-price" class="text-success form-control-plaintext">EXAMPLE PRICE</p>
-
-          </div>
-          <div class="col-6 mb-3">
-            <label for="quantity" class="col-form-label">Quantity:</label>
-            <p id="view-quantity" class="text-success form-control-plaintext">EXAMPLE QUANTITY</p>
-          </div> -->
           <div class="col-6 mb-3">
             <label for="order-date" class="col-form-label">User creation Date:</label>
             <p id="view-order-date" class="text-success form-control-plaintext">EXAMPLE ORDER DATE</p>
@@ -45,49 +32,41 @@
           </div>
 
           <table class="table table-bordered table-striped mx-auto ">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                    </tr>
-                </thead>
-                <tbody id="productsTableBody">
-                </tbody>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody">
+            </tbody>
           </table>
 
           <br />
-
-
-
-
-
-
-
-
 
           <!-- action - pending, completed or cancelled -->
           <div class="col-6 mb-3">
             <label for="status" class="col-form-label">Status:</label>
             <!-- drop down -->
-             <input type="hidden" name="id" id="orderID" value="">
+            <input type="hidden" name="id" id="orderID" value="">
             <div id="statusUpdate">
-            <select id="view-status" class="form-select">
-              <option value="pending">Pending</option>
-              <option value="processing">Processing</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-             <button type="button" id="updateStatus" class="btn btn-primary mt-2">Update Status</button>
+              <select id="view-status" class="form-select">
+                <option value="pending">Pending</option>
+                <option value="processing">Processing</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <button type="button" id="updateStatus" class="btn btn-primary mt-2">Update Status</button>
             </div>
 
-                <p id="statusText" class="form-control-plaintext text-danger fw-bold"></p>
+            <p id="statusText" class="form-control-plaintext text-danger fw-bold"></p>
 
           </div>
 
           <div class="col-6 mb-3">
             <span>TOTAL: <p id="view-total" class="total_amount text-success "></p></span>
-            
+
           </div>
         </div>
       </div>
@@ -95,59 +74,54 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
         <div id="deleteOrder">
-            
-            <button type="button" id="del-order" class="btn btn-danger ">DELETE ORDER</button>
+
+          <button type="button" id="del-order" class="btn btn-danger ">DELETE ORDER</button>
 
         </div>
 
       </div>
     </div>
   </div>
-</div> 
+</div>
 
 <script>
+  function fetchOrderDetails(id) {
+    $.ajax({
 
 
-    function fetchOrderDetails(id)
-    {
-            $.ajax({
+
+      url: "<?php echo base_url("view-details/") ?>" + id,
 
 
-    
-        url: "<?php echo base_url("view-details/")?>"  + id ,
+      type: "GET",
 
+      dataType: "json",
 
-        type: "GET",
+      success: function(response) {
+        if (response.success) {
+          var order = response.data;
 
-        dataType: "json",
+          if (order.length > 0)
 
-        success: function(response)
-        {
-            if (response.success)
-            {
-                var order = response.data;
+          {
+            console.log("DATA", order)
+            $("#orderID").val(order[0].id);
+            $("#view-first-name").text(order[0].f_name);
+            $("#view-last-name").text(order[0].l_name);
+            $("#view-phone_number").text(order[0].phone);
+            $("#view-order-date").text(order[0].created_at);
+            $("#view-total").text(order[0].total_price);
 
-                if (order.length > 0)
+            $("#view-status").val(order[0].status);
 
-                {
-                console.log("DATA", order)
-                $("#orderID").val(order[0].id);
-                $("#view-first-name").text(order[0].f_name);
-                $("#view-last-name").text(order[0].l_name);
-                $("#view-phone_number").text(order[0].phone);
-                $("#view-order-date").text(order[0].created_at);
-                $("#view-total").text(order[0].total_price);
-                
-                $("#view-status").val(order[0].status); 
+          }
 
-                }
+          $("#productsTableBody").html(""); // Clear previous product rows
 
-                $("#productsTableBody").html(""); // Clear previous product rows
+          order.forEach(function(item) {
 
-                order.forEach(function(item){
-
-                // console.log("PRODEUC NAME: ", item.p_name)
-                var row = `
+            // console.log("PRODEUC NAME: ", item.p_name)
+            var row = `
                 <tr>
                     <td>${item.p_name}</td>
                     <td>${item.quantity}</td>
@@ -155,46 +129,42 @@
                 </tr>
                   `;
 
-                  $("#productsTableBody").append(row);
+            $("#productsTableBody").append(row);
 
-                })
+          })
 
-                  if(order[0].status === "cancelled" || order[0].status === "completed")
-                    {
-                        $("#statusUpdate").hide(); 
-                        $("#updateStatus").hide(); 
-                        $("#statusText").text(order[0].status).show();
-                        $("#deleteOrder").show(); 
+          if (order[0].status === "cancelled" || order[0].status === "completed") {
+            $("#statusUpdate").hide();
+            $("#updateStatus").hide();
+            $("#statusText").text(order[0].status).show();
+            $("#deleteOrder").show();
 
-                    }
-
-                    else
-                    {
-                        $("#statusUpdate").show();
-                        $("#updateStatus").show();  
-                        $("#statusText").hide(); 
-                        $("#view-status").val(order[0].status);
-                        $("#deleteOrder").hide(); 
-                    }
+          } else {
+            $("#statusUpdate").show();
+            $("#updateStatus").show();
+            $("#statusText").hide();
+            $("#view-status").val(order[0].status);
+            $("#deleteOrder").hide();
+          }
 
 
-            }
+        }
 
-            // else
-            // {
-                
-            // }
-        },
+        // else
+        // {
 
-        error: function(xhr, status, error){
+        // }
+      },
+
+      error: function(xhr, status, error) {
         console.log("ERROR: " + status + " " + error);
-    }
+      }
 
-});
-    }
+    });
+  }
 
 
-$(document).on("click", ".viewDetailsbtn", function(){
+  $(document).on("click", ".viewDetailsbtn", function() {
 
 
     var id = $(this).data("id");
@@ -202,63 +172,52 @@ $(document).on("click", ".viewDetailsbtn", function(){
     console.log("ID IS", id)
 
     fetchOrderDetails(id);
-    });
+  });
 
 
+  // Update Status (eg: pending, completed....)
+  $(function() {
 
+    $(document).on("click", '#updateStatus', function() {
 
+      var UpdatedStatus = $("#view-status").val();
+      var orderID = $("#orderID").val();
 
-    // Update Status (eg: pending, completed....)
-    $(function(){
+      console.log("ORDER ID IS: ", orderID);
 
-    $(document).on("click", '#updateStatus', function(){
-        
-        var UpdatedStatus = $("#view-status").val();
-        var orderID = $("#orderID").val();
+      $.ajax({
+        url: "<?php echo base_url("update-order-status/")  ?>" + orderID,
 
-        console.log("ORDER ID IS: ",orderID);
+        type: "post",
 
-        $.ajax(
+        dataType: "json",
+
+        data: {
+          status: UpdatedStatus
+        },
+
+        success: function(response)
+
         {
-            url: "<?php echo base_url("update-order-status/")  ?>" + orderID,
-            
-            type: "post",
+          if (response.success) {
 
-            dataType: "json",
+            $("#statusAlert").show().fadeOut(4000);
 
-            data:{
-                status: UpdatedStatus
-            },
+            fetchOrderDetails(orderID);
+          }
+        }
 
-            success: function(response)
-
-            {
-                if(response.success)
-                {
-
-                    $("#statusAlert").show().fadeOut(4000);
-
-                    fetchOrderDetails(orderID);
-                }
-            }
-
-            
-
-
-
-        });
+      });
 
     });
 
+  });
 
 
-    });
-  
-    
 
-    $(function(){
+  $(function() {
 
-    $(document).on("click", "#del-order", function(){
+    $(document).on("click", "#del-order", function() {
 
       var orderID = $("#orderID").val();
 
@@ -271,15 +230,13 @@ $(document).on("click", ".viewDetailsbtn", function(){
 
         data: {
           id: orderID
-          },
+        },
 
-        success: function(response)
-        {
-          if(response.success)
-          {
+        success: function(response) {
+          if (response.success) {
             lodeData();
             //close modal
-            
+
             $("#viewDetailsModal").modal("hide");
 
             showToast(response.message);
@@ -295,19 +252,15 @@ $(document).on("click", ".viewDetailsbtn", function(){
     });
 
 
-    });
+  });
 
 
 
 
 
-    // DELETE ORDER
-
-    
-
-    // 
+  // DELETE ORDER
 
 
 
-
+  // 
 </script>

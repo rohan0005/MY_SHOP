@@ -31,10 +31,11 @@
 
             <div class="mb-1">
               <label for="recipient-name" class="col-form-label">Product Name:</label>
+
+              <input id="product-search" type="search" class="form-control" placeholder="Search Products" name="" id="">
               <!-- <input type="text" class="form-control" id="product-name"> -->
 
-              <select class="form-select" id="product-name" >
-                <option selected>PRODUCT NAME</option>
+              <select multiple class="form-select" id="product-name" >
               </select>
 
 
@@ -136,7 +137,6 @@
   <script>
 
 
-  let cart = [];
   var productSummaryList;
 
 
@@ -169,11 +169,6 @@
           // LOADING ALL THE PRODUCT IN THE list
           });
 
-
-
-
-
-
     $.ajax({
       url: "<?php echo base_url("all_product") ?>",
       type: "GET",
@@ -188,7 +183,7 @@
             
           $("#product-name").append
           (
-            '<option  id="productid" value="'+item.id+'"  data-price="'+ item.price +'" data-pid="'+ item.id +'"> ' + item.p_name + '</option>',
+            '<option value="'+item.id+'"  data-price="'+ item.price +'" data-pid="'+ item.id +'"> ' + item.p_name + '</option>',
           )
 
         });
@@ -201,10 +196,17 @@
     // SHOW PRICE ACCORDING TO PRODUCT SELECTED
     $("#product-name").change(function(){
 
-        var selectedPrice = $(this).find("option:selected").data("price");
-        $("#price").val(selectedPrice);
+        totalPrice = 0;
 
+        $("#product-name option:selected").each(function(){
 
+        var price = parseFloat($(this).data("price"));
+        totalPrice += price;
+
+        });
+
+        $("#price").val(totalPrice.toFixed(2));
+        
     });
     
 
@@ -212,55 +214,55 @@
   // SHOWING SELECTED PRODUCTS IN SUMMARY TABLE.
     $("#addProductToSummary").click(function(){
 
-        var price = parseFloat($("#price").val());
-        var id = $("#product-name").val();
-
-        var product_name = $("#product-name option:selected").text().trim();
         var quantity = parseInt($("#quantity").val());
-        var total_price = price * quantity;
 
-        if(!isNaN(price) && !isNaN(quantity))
+        if (isNaN(quantity) || quantity <= 0) {
+            showToast("Please enter valid quantity");
+            return;
+        }
+
+        var selectedOptions = $("#product-name option:selected");
+
+        if(selectedOptions.length === 0)
         {
-            var productExists = false;
+            showToast("Please select at least one product.");
+            return;
+        }        
 
-            productSummaryList.rows().every(function () 
-            {
+        selectedOptions.each(function(){
+          var product_name = $(this).text();
+          var price = parseFloat(($(this)).data("price"));
+          var id = $(this).val();
+          var total_price = price * quantity;
 
-              var row = this.data();
-              var existingID = row.id; //hidden id column
+          var productExists = false;
 
-              if(existingID == id)
+              productSummaryList.rows().every(function(){
+              var row  = this.data()
+
+              console.log("ROWWWWWWW: ", row)
+
+              if(parseInt(row.id) === parseInt(id))
               {
-                var existingQuantity = parseInt(row.quantity); //quantity column
-                var newQuantity = existingQuantity + quantity;
+                var newQuantity = parseInt(row.quantity) + quantity;
                 var newTotal = price * newQuantity;
 
-                // UPDATE THE ROW
                 this.data({
-
                   name: product_name,
-                  price: price,
-                  quantity: newQuantity,
-                  total: newTotal,
-                  action: '<button type="button"  data-total="' +newTotal+ '"  data-pid="' +id+ '" data-quantity="' +newQuantity+ '"  data-productname="' +product_name+ '" class="btn btn-danger btn-sm removeProduct">X</button>',
-                  id: id // HIDDEN
+                    price: price,
+                    quantity: newQuantity,
+                    total: newTotal,
+                    action: '<button type="button"  data-total="' +total_price+ '"  data-pid="' +id+ '" data-quantity="' +quantity+ '"  data-productname="' +product_name+ '" class="btn btn-danger btn-sm removeProduct">X</button>',
+                    id: id // HIDDEN
                   }).draw(false);
 
                 productExists = true;
 
-
-                $("#quantity").val("");
-                $("#price").val("");
-                $("#product-name").prop("selectedIndex", 0);
-
-                showToast("Product quantity updated!!");
-
-
               }
 
-            }); // productSummaryList.rows() function CLOSE
-            
-            if(!productExists)
+            })
+
+             if(!productExists)
               {
 
               // IF USER ADDED NEW PRODUCT
@@ -273,25 +275,109 @@
                     id: id // HIDDEN
 
                   }).draw();
-
-
-                $("#quantity").val("");
-                $("#price").val("");
-                $("#product-name").prop("selectedIndex", 0);
-
-                showToast("Product Added to List!!");
-
-
                 };
+
+        // console.log("HERE:")
+
+
+
+
+            //  Reset fields
+            $("#quantity").val("");
+            $("#price").val("");
+            $("#product-name").val([]).trigger("change");
+
+            showToast("Products added successfully!");
+
+        });
+
+
+
+
+
+
+        // var price = parseFloat($("#price").val());
+        // var id = $("#product-name").val();
+
+        // var product_name = selectedTexts;
+        // var quantity = parseInt($("#quantity").val());
+
+        
+        // var total_price = price * quantity;
+
+        // if(!isNaN(price) && !isNaN(quantity))
+        // {
+        //     var productExists = false;
+
+        //     productSummaryList.rows().every(function () 
+        //     {
+
+        //       var row = this.data();
+        //       var existingID = row.id; //hidden id column
+
+        //       if(existingID == id)
+        //       {
+        //         var existingQuantity = parseInt(row.quantity); //quantity column
+        //         var newQuantity = existingQuantity + quantity;
+        //         var newTotal = price * newQuantity;
+
+        //         // UPDATE THE ROW
+        //         this.data({
+
+        //           name: product_name,
+        //           price: price,
+        //           quantity: newQuantity,
+        //           total: newTotal,
+        //           action: '<button type="button"  data-total="' +newTotal+ '"  data-pid="' +id+ '" data-quantity="' +newQuantity+ '"  data-productname="' +product_name+ '" class="btn btn-danger btn-sm removeProduct">X</button>',
+        //           id: id // HIDDEN
+        //           }).draw(false);
+
+        //         productExists = true;
+
+
+        //         $("#quantity").val("");
+        //         $("#price").val("");
+        //         $("#product-name").prop("selectedIndex", 0);
+
+        //         showToast("Product quantity updated!!");
+
+
+        //       }
+
+        //     }); // productSummaryList.rows() function CLOSE
+            
+        //     if(!productExists)
+        //       {
+
+        //       // IF USER ADDED NEW PRODUCT
+        //       productSummaryList.row.add({
+        //             name: product_name,
+        //             price: price,
+        //             quantity: quantity,
+        //             total: total_price,
+        //             action: '<button type="button"  data-total="' +total_price+ '"  data-pid="' +id+ '" data-quantity="' +quantity+ '"  data-productname="' +product_name+ '" class="btn btn-danger btn-sm removeProduct">X</button>',
+        //             id: id // HIDDEN
+
+        //           }).draw();
+
+
+        //         $("#quantity").val("");
+        //         $("#price").val("");
+        //         $("#product-name").prop("selectedIndex", 0);
+
+        //         showToast("Product Added to List!!");
+
+
+        //         };
             
             
-          }
+          // }
 
-          else
-          {
-            showToast("Some fields are missing to add a product !!");
+          // else
+          // {
+          //   showToast("Some fields are missing to add a product !!");
 
-          }
+          // }
     
     });
 
@@ -426,5 +512,35 @@
     });
 
   });
+
+
+  // SEARCH PRODUCT:
+
+  $("#product-search").on("keyup", function(){
+    var searchvalue = $(this).val().toLowerCase();
+
+    $("#product-name option").each(function(){
+        var productText = $(this).text().toLowerCase();
+
+        if(productText.includes(searchvalue))
+        {
+          $(this).show();
+        }
+        else
+        {
+          $(this).hide();
+        }
+    })
+
+  });
+
+
+
+
+
+
+
+
+
 
   </script>

@@ -11,6 +11,7 @@
             $this->db->trans_start();   // It allows to group multiple database queries together so that they either all succeed or all fail as a single unit.
 
             $grand_total = 0;
+            $product_list = [];
             
             if (!empty($products) && is_array($products)) {
 
@@ -20,12 +21,18 @@
                     $quantity = (int) $product['quantity'];
                     $price = (float) $product['price'];
 
+                    $total = $quantity * $price;
+
                     if ($quantity > 0 && $price >= 0) {
                         $grand_total += $quantity * $price;
                     }
 
-
-
+                     $product_list[] = [
+                        'name'     => $product['name'],
+                        'quantity' => $quantity,
+                        'price'    => $price,
+                        'total'    => $total
+                    ];
                 }
             }
             
@@ -62,18 +69,18 @@
 
 
                     
-                    // NOW INSERT INTO ORDER TABLE:
-                    $orderData = array(
-                        // 'p_id' => $p_id,
-                        'user_id' => $user_id,
-                        // 'quantity' => x$this->input->post("quantity"),
-                        'total_price' => $grand_total,
-                        'status' => "pending",
-                    );
-                    $this->db->insert("orders", $orderData);
+                // NOW INSERT INTO ORDER TABLE:
+                $orderData = array(
+                    // 'p_id' => $p_id,
+                    'user_id' => $user_id,
+                    // 'quantity' => x$this->input->post("quantity"),
+                    'total_price' => $grand_total,
+                    'status' => "pending",
+                );
+                $this->db->insert("orders", $orderData);
 
-                    //get the id of orders
-                    $order_ID = $this->db->insert_id();
+                //get the id of orders
+                $order_ID = $this->db->insert_id();
 
 
 
@@ -113,7 +120,12 @@
                             return false;
                     }
 
-                    return true;
+                    return [
+                            'order_id'    => $order_ID,
+                            'items'       => $product_list,
+                            'grand_total' => $grand_total
+                        ];
+                    ;
 
 
                 }
@@ -209,10 +221,11 @@
         public function latest_order($id)
         {
 
-            $this->db->select("`orders`.id, `orders`.quantity, `orders`.order_date, users.f_name, users.l_name, product.p_name, product.price");
+            $this->db->select("`orders`.id, `order_items`.price,  `orders`.order_date, users.f_name, users.l_name, product.p_name, `order_items`.quantity,");
             $this->db->from("`orders`");    
             $this->db->join("users", "users.id = `orders`.user_id");
-            $this->db->join("product", "product.id = `orders`.p_id");
+            $this->db->join("order_items", "order_items.order_id = `orders`.id");
+            $this->db->join("product", "product.id = `order_items`.p_id");
             $this->db->where("`orders`.user_id", $id);
 
             $this->db->order_by("order_date", "DESC");

@@ -38,39 +38,136 @@ public function __construct()
                 'message'=> strip_tags(validation_errors()),
 
             ]);
+
+            return;
         }
 
-        else
-        {
-            
-            // $user_email = $this->form_validation->set_rules('email', 'Email', 'required');
-            $user_email = $this->input->post('email');
+        // IF VALIDATE CALL THE MODEL
 
-            
-            $subject = "Order Placed!!";
-            $message = "<h1>Your order has been placed!</h1>";
-            
-            //call model function to save the data.
-            $result = $this->OrdersModel->place_order();
-            // send_email();
-            // send_email($user_email, $subject, $message);
+        $result = $this->OrdersModel->place_order();
 
-           if ($result) {
-                
-                $this->send_email($user_email, $subject, $message);
-
+        if(!$result)
+            {
                 echo json_encode([
-                    'success' => true,
-                    'message' => "Order Placed Successfully!!!!"
+                'success' => false,
+                'message' => "Database error occurred."
                 ]);
-            } else {
-                echo json_encode([
-                    'success' => false,
-                    'message' => "Database error occurred"
-                ]);
+
             }
+
+        
+        // ELSE place order.
+
+        $user_email = $this->input->post('email');
+        $f_name = $this->input->post('f_name');
+        $l_name = $this->input->post('l_name');
+        $phone  = $this->input->post('phone');
+
+        $data = [
+
+            'full_name' => $f_name . " " . $l_name,
+            'phone' => $phone,
+            'order_id' => $result['order_id'],
+            'items' => $result['items'],
+            'grand_total' => $result['grand_total'],
+        ];
+
+        
+        $message = $this->load->view('order/email_message', $data, TRUE);
+        $subject = "Order Confirmation!!";
+
+
+        $this->send_email($user_email, $subject, $message);
+
+        echo json_encode([
+                'success' => true,
+                'message' => "Order Placed Successfully!!!!"
+            ]);
+
+
+
             
-        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //     // $user_email = $this->form_validation->set_rules('email', 'Email', 'required');
+    //     $user_email = $this->input->post('email');
+
+    //     $f_name = $this->input->post('f_name');
+    //     $l_name = $this->input->post('l_name');
+    //     $phone  = $this->input->post('phone');
+
+
+
+
+        
+    //     $subject = "Order Confirmation!!";
+
+    //     $data= [
+    //         'full_name' => $f_name . " " . $l_name,
+    //         'phone' => $phone,
+    //         'order_id' => $order_id,
+    //         'items' => $products_array,
+    //         'grand_total' => $grand_total
+    //     ];
+
+    //     $message = $this->load->view('order/email_message', $data, TRUE);
+
+
+    //     // $message = "<h1>Your order has been placed!</h1>";
+        
+    //     //call model function to save the data.
+    //     $result = $this->OrdersModel->place_order();
+    //     // send_email();
+    //     // send_email($user_email, $subject, $message);
+
+    // if ($result) {
+            
+    //         $this->send_email($user_email, $subject, $message);
+
+    //         echo json_encode([
+    //             'success' => true,
+    //             'message' => "Order Placed Successfully!!!!"
+    //         ]);
+    //     } else {
+    //         echo json_encode([
+    //             'success' => false,
+    //             'message' => "Database error occurred"
+    //         ]);
+    //     }
+            
+
 
     }
 
@@ -185,40 +282,40 @@ public function __construct()
     public function send_email($user_email, $subject, $message)
     {
         try {
-        $my_gmail = 'jr8484511@gmail.com';
+                $my_gmail = 'jr8484511@gmail.com';
 
-        $config = array(
-            'protocol'   => 'smtp',
-            'smtp_host'  => 'smtp.gmail.com',
-            'smtp_port'  => 587,
-            'smtp_user'  => $my_gmail,
-            'smtp_pass'  => 'opnx xooj tnqj quwo', // app password
-            'smtp_crypto'=> 'tls',
-            'mailtype'   => 'html',
-            'charset'    => 'utf-8',
-            'newline'    => "\r\n",
-            'crlf'       => "\r\n",
-        );
+                $config = array(
+                    'protocol'   => 'smtp',
+                    'smtp_host'  => 'smtp.gmail.com',
+                    'smtp_port'  => 587,
+                    'smtp_user'  => $my_gmail,
+                    'smtp_pass'  => 'opnx xooj tnqj quwo', // app password
+                    'smtp_crypto'=> 'tls',
+                    'mailtype'   => 'html',
+                    'charset'    => 'utf-8',
+                    'newline'    => "\r\n",
+                    'crlf'       => "\r\n",
+                );
 
-        $this->email->initialize($config);
-        $this->email->clear(); 
+                $this->email->initialize($config);
+                $this->email->clear(); 
 
-        $this->email->from($my_gmail, 'MY SHOP');
-        $this->email->to((string)$user_email); 
-        $this->email->subject($subject);
-        $this->email->message($message);
+                $this->email->from($my_gmail, 'MY SHOP');
+                $this->email->to((string)$user_email); 
+                $this->email->subject($subject);
+                $this->email->message($message);
 
 
-        if(!$this->email->send()){
-            echo $this->email->print_debugger();
-            exit;
-        }
+                if(!$this->email->send()){
+                    echo $this->email->print_debugger();
+                    exit;
+                }
 
-        if(!$this->email->send()){
-            log_message('error', $this->email->print_debugger());
-        }
+                if(!$this->email->send()){
+                    log_message('error', $this->email->print_debugger());
+                }
 
-        }
+            }
 
         catch(Exception $e) {
         log_message('error', 'Email error: ' . $e->getMessage());
@@ -226,6 +323,15 @@ public function __construct()
 
 
     }
+
+
+
+
+
+
+
+
+
 
 }
 
