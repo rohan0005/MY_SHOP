@@ -1,8 +1,13 @@
+<a href="<?php echo base_url('export') ?>"
+  class="btn btn-success">
+  Download Excel
+</a>
 
-    
+<br /><br />
+
 <table id="myTable" class="table table-bordered table-striped mx-auto " style="width: 90%;">
 
-<thead>
+  <thead>
     <tr>
       <th scope="col">order_id</th>
       <th scope="col">First</th>
@@ -12,15 +17,12 @@
     </tr>
   </thead>
 
-<tbody class="tableBody">
+  <tbody class="tableBody">
 
     <!-- SHOULD BE EMPTY -->
 
-    
-    
+
+
   </tbody>
 
 </table>
-
-
-

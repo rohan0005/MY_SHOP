@@ -1,14 +1,14 @@
 <?php
 
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 
 class Order extends MY_Controller
 {
-public function __construct()
+    public function __construct()
 
     {
-         parent:: __construct();
+        parent::__construct();
         //  $this->load->module("")
         $this->load->module("template");
         $this->load->model("OrdersModel");
@@ -28,14 +28,15 @@ public function __construct()
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
 
 
-        
-        if ($this->form_validation->run() == FALSE)
-        {
+
+        if ($this->form_validation->run() == FALSE) {
             $this->session->set_flashdata("errors", validation_errors());
 
+            $errors = explode("\n", trim(strip_tags(validation_errors())));
+
             echo json_encode([
-                'success'=> false,
-                'message'=> strip_tags(validation_errors()),
+                'success' => false,
+                'message' => $errors[0],
 
             ]);
 
@@ -46,16 +47,14 @@ public function __construct()
 
         $result = $this->OrdersModel->place_order();
 
-        if(!$result)
-            {
-                echo json_encode([
+        if (!$result) {
+            echo json_encode([
                 'success' => false,
                 'message' => "Database error occurred."
-                ]);
+            ]);
+        }
 
-            }
 
-        
         // ELSE place order.
 
         $user_email = $this->input->post('email');
@@ -72,7 +71,7 @@ public function __construct()
             'grand_total' => $result['grand_total'],
         ];
 
-        
+
         $message = $this->load->view('order/email_message', $data, TRUE);
         $subject = "Order Confirmation!!";
 
@@ -80,95 +79,9 @@ public function __construct()
         $this->send_email($user_email, $subject, $message);
 
         echo json_encode([
-                'success' => true,
-                'message' => "Order Placed Successfully!!!!"
-            ]);
-
-
-
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //     // $user_email = $this->form_validation->set_rules('email', 'Email', 'required');
-    //     $user_email = $this->input->post('email');
-
-    //     $f_name = $this->input->post('f_name');
-    //     $l_name = $this->input->post('l_name');
-    //     $phone  = $this->input->post('phone');
-
-
-
-
-        
-    //     $subject = "Order Confirmation!!";
-
-    //     $data= [
-    //         'full_name' => $f_name . " " . $l_name,
-    //         'phone' => $phone,
-    //         'order_id' => $order_id,
-    //         'items' => $products_array,
-    //         'grand_total' => $grand_total
-    //     ];
-
-    //     $message = $this->load->view('order/email_message', $data, TRUE);
-
-
-    //     // $message = "<h1>Your order has been placed!</h1>";
-        
-    //     //call model function to save the data.
-    //     $result = $this->OrdersModel->place_order();
-    //     // send_email();
-    //     // send_email($user_email, $subject, $message);
-
-    // if ($result) {
-            
-    //         $this->send_email($user_email, $subject, $message);
-
-    //         echo json_encode([
-    //             'success' => true,
-    //             'message' => "Order Placed Successfully!!!!"
-    //         ]);
-    //     } else {
-    //         echo json_encode([
-    //             'success' => false,
-    //             'message' => "Database error occurred"
-    //         ]);
-    //     }
-            
-
-
+            'success' => true,
+            'message' => "Order Placed Successfully!!!!"
+        ]);
     }
 
 
@@ -183,8 +96,6 @@ public function __construct()
             "success" => true,
             "data" => $data,
         ]);
-
-        
     }
 
     public function view_oder_details($id)
@@ -193,11 +104,10 @@ public function __construct()
 
         echo json_encode([
 
-        "success" => true,
-        "data" => $data,
+            "success" => true,
+            "data" => $data,
 
         ]);
-
     }
 
 
@@ -205,8 +115,7 @@ public function __construct()
     {
         $this->form_validation->set_rules("status", "status", 'required');
 
-        if($this->form_validation->run() == FALSE)
-        {
+        if ($this->form_validation->run() == FALSE) {
             $this->session->flashdata('errors', validation_errors());
 
             echo json_encode([
@@ -215,18 +124,13 @@ public function __construct()
                 'message' => validation_errors(),
 
             ]);
-            
-        }
-
-        else
-        {
+        } else {
             $this->OrdersModel->update_status_model($id);
             echo json_encode([
                 "success" => true,
                 "message" => "Order status Changed!!!"
             ]);
         }
-
     }
 
 
@@ -235,31 +139,25 @@ public function __construct()
     public function delete_order($id)
     {
 
-        if(empty($id))
-            {
+        if (empty($id)) {
 
-                echo json_encode([
+            echo json_encode([
 
                 'success' => false,
                 'message' => "No ID provided",
 
             ]);
-            
+
             return;
+        } {
+            $this->OrdersModel->delete_order($id);
 
-            }
+            echo json_encode([
 
-
-            {
-                $this->OrdersModel->delete_order($id);
-
-                echo json_encode([
-
-                    'success' => true,
-                    'message' => "ORDER DELETED!!!!!!",
-                ]);
-                
-            }
+                'success' => true,
+                'message' => "ORDER DELETED!!!!!!",
+            ]);
+        }
     }
 
 
@@ -273,8 +171,6 @@ public function __construct()
             'data' => $latest_orders,
 
         ]);
-
-
     }
 
 
@@ -282,57 +178,83 @@ public function __construct()
     public function send_email($user_email, $subject, $message)
     {
         try {
-                $my_gmail = 'jr8484511@gmail.com';
+            $my_gmail = 'jr8484511@gmail.com';
 
-                $config = array(
-                    'protocol'   => 'smtp',
-                    'smtp_host'  => 'smtp.gmail.com',
-                    'smtp_port'  => 587,
-                    'smtp_user'  => $my_gmail,
-                    'smtp_pass'  => 'opnx xooj tnqj quwo', // app password
-                    'smtp_crypto'=> 'tls',
-                    'mailtype'   => 'html',
-                    'charset'    => 'utf-8',
-                    'newline'    => "\r\n",
-                    'crlf'       => "\r\n",
-                );
+            $config = array(
+                'protocol'   => 'smtp',
+                'smtp_host'  => 'smtp.gmail.com',
+                'smtp_port'  => 587,
+                'smtp_user'  => $my_gmail,
+                'smtp_pass'  => 'opnx xooj tnqj quwo', // app password
+                'smtp_crypto' => 'tls',
+                'mailtype'   => 'html',
+                'charset'    => 'utf-8',
+                'newline'    => "\r\n",
+                'crlf'       => "\r\n",
+            );
 
-                $this->email->initialize($config);
-                $this->email->clear(); 
+            $this->email->initialize($config);
+            $this->email->clear();
 
-                $this->email->from($my_gmail, 'MY SHOP');
-                $this->email->to((string)$user_email); 
-                $this->email->subject($subject);
-                $this->email->message($message);
+            $this->email->from($my_gmail, 'MY SHOP');
+            $this->email->to((string)$user_email);
+            $this->email->subject($subject);
+            $this->email->message($message);
 
 
-                if(!$this->email->send()){
-                    echo $this->email->print_debugger();
-                    exit;
-                }
-
-                if(!$this->email->send()){
-                    log_message('error', $this->email->print_debugger());
-                }
-
+            if (!$this->email->send()) {
+                echo $this->email->print_debugger();
+                exit;
             }
 
-        catch(Exception $e) {
-        log_message('error', 'Email error: ' . $e->getMessage());
+            if (!$this->email->send()) {
+                log_message('error', $this->email->print_debugger());
+            }
+        } catch (Exception $e) {
+            log_message('error', 'Email error: ' . $e->getMessage());
         }
-
-
     }
 
 
+    // EXPORT ORDERS INTO CSV.
+    public function export_orders()
+    {
+        $this->load->model('OrdersModel');
 
+        $orders = $this->OrdersModel->view_all_orders();
 
+        header("Content-Type: text/CSV");
+        header("Content-Disposition: attachment; filename=orders_" . date('y-m-d') . ".CSV");
+        header("Pragma: no-cache");
+        header("Expires: 0");
 
+        $output = fopen("php://output", "w");
 
+        fputcsv($output, [
+            'Order ID',
+            'Customer Name',
+            'Phone',
+            'Product',
+            'Quantity',
+            'Total',
+            'Status',
+            'Order Date'
+        ]);
 
+        foreach ($orders as $order) {
+            fputcsv($output, [
+                $order->id,
+                $order->f_name . ' ' . $order->l_name,
+                $order->phone,
+                $order->p_name,
+                $order->quantity,
+                $order->total_price,
+                $order->status,
+                $order->order_date
+            ]);
+        }
 
-
-
+        fclose($output);
+        exit;
+    }
 }
-
-?>

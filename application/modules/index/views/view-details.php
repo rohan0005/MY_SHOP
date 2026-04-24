@@ -73,11 +73,11 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
-        <div id="deleteOrder">
+        <!-- <div id="deleteOrder">
 
           <button type="button" id="del-order" class="btn btn-danger ">DELETE ORDER</button>
 
-        </div>
+        </div> -->
 
       </div>
     </div>

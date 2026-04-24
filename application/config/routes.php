@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 
 $route['default_controller'] = 'index/load_index_page';
@@ -68,17 +68,4 @@ $route['add_product'] = 'product/add_new_product';
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+$route['export'] = 'order/export_orders';
