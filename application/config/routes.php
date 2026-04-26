@@ -69,3 +69,11 @@ $route['add_product'] = 'product/add_new_product';
 
 
 $route['export'] = 'order/export_orders';
+
+
+// new product page ss
+
+$route['get_product_ss'] = 'product/all_product_ss';
+
+
+$route['productSS'] = 'product/new_product_page';

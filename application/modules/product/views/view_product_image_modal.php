@@ -7,29 +7,27 @@
       </div>
       <form>
 
-      <div class="modal-body">
+        <div class="modal-body">
 
-        <div class="productName">
+          <div class="productName">
 
-        </div>
+          </div>
 
 
 
           <div class="mb-1 imageArea">
 
 
-            
-        </div>
 
-          
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </form>
+          </div>
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </form>
 
     </div>
   </div>
-</div> 
-
-
+</div>
