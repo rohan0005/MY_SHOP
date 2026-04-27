@@ -101,11 +101,16 @@ class Product extends MY_Controller
 
     public function all_product_ss()
     {
+        $draw = $_POST['draw'];
+        $start = $_POST['start'];
+        $length = $_POST['length'];
+        $searchPost = $_POST['search'];
 
-        $draw = $this->input->post('draw');
-        $start = $this->input->post('start');
-        $length = $this->input->post('length');
-        $searchPost = $this->input->post('search');
+
+        // $draw = $this->input->post('draw');
+        // $start = $this->input->post('start');
+        // $length = $this->input->post('length');
+        // $searchPost = $this->input->post('search');
         $search = isset($searchPost['value']) ? $searchPost['value'] : '';
 
 

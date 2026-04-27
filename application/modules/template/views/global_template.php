@@ -35,6 +35,14 @@
                 <h6 class="text-success">SS PRODUCTS</h6>
             </a>
 
+            <a class="navbar-brand" href="<?php echo base_url("all-orders") ?>">
+                <h6 class="text-success">SS All Orders</h6>
+            </a>
+
+            <a class="navbar-brand" href="<?php echo base_url("user-details") ?>">
+                <h6 class="text-success">SS All USERS</h6>
+            </a>
+
 
             <form class="d-flex">
                 <?php if ($this->uri->segment(1) == '' || $this->uri->segment(1) == 'home') { ?>

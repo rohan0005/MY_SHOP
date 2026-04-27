@@ -218,4 +218,48 @@ class OrdersModel extends CI_Model
 
         return $query->result();
     }
+
+
+    //server side order data loading MODEL:
+    public function get_all_orders_with_details($start, $length, $search)
+    {
+        $this->db->select(" orders.id, orders.total_price, orders.status,users.phone, users.f_name, users.created_at, users.l_name, product.p_name, product.price, order_items.quantity, order_items.price");
+        $this->db->from("orders");
+        $this->db->join("users", "users.id = orders.user_id");
+        $this->db->join("order_items", "order_items.order_id = orders.id");
+        $this->db->join("product", "product.id = order_items.p_id");
+        $this->db->group_by("orders.id");
+
+
+        if ($search) {
+            $this->db->group_start();
+            $this->db->like("users.f_name", $search);
+            $this->db->or_like("product.p_name", $search);
+            $this->db->group_end();
+        }
+
+        $this->db->limit($length, $start);
+        return $this->db->get()->result();
+    }
+
+
+    public function count_all_orders()
+    {
+        return $this->db->count_all('orders');
+    }
+
+    public function count_filtered_orders($search)
+    {
+        $this->db->from('orders');
+        $this->db->join('users', 'users.id = orders.user_id');
+        $this->db->join('order_items', 'order_items.order_id = orders.id');
+        $this->db->join('product', 'product.id = order_items.p_id');
+
+        if ($search) {
+            $this->db->like('users.f_name', $search);
+            $this->db->or_like('product.p_name', $search);
+        }
+
+        return $this->db->count_all_results();
+    }
 }

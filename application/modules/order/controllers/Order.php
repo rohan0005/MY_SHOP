@@ -16,6 +16,7 @@ class Order extends MY_Controller
         $this->load->library('form_validation');
         $this->load->library('session');
         $this->load->library('email');
+
         // $this->load->helper('url');
     }
 
@@ -256,5 +257,54 @@ class Order extends MY_Controller
 
         fclose($output);
         exit;
+    }
+
+    public function all_order_page()
+    {
+        $page['page_content'] = 'order/order_page_ss';
+
+        $this->load->view("template/global_template", $page);
+        $this->load->view("template/footer");
+    }
+
+
+    //server side order data loading.
+    public function all_orders_with_details()
+    {
+        $draw = $this->input->post("draw");
+        $start = $this->input->post("start");
+        $length = $this->input->post("length");
+        $searchPost = $this->input->post("search");
+        $search = isset($searchPost['value']) ? $searchPost['value'] : '';
+
+        $data = $this->OrdersModel->get_all_orders_with_details($start, $length, $search);
+        $totalData = $this->OrdersModel->count_all_orders();
+        $totalFiltered = $this->OrdersModel->count_filtered_orders($search);
+
+        $rows = array();
+
+        foreach ($data as $item)
+            $rows[] = [
+                "id" => $item->id,
+                "f_name" => $item->f_name,
+                "l_name" => $item->l_name,
+                "total" => $item->total_price,
+                "status" => $item->status,
+                "action" => '<button data-bs-toggle="modal" data-bs-target="#viewOrderDetailsModal" class="viewOrderDetails btn btn-primary btn-sm" 
+                data-total="' . $item->total_price . '"
+                data-phone="' . $item->phone . '"
+                data-createdat="' . $item->created_at . '"
+                data-id="' . $item->id . '"
+                data-status="' . $item->status . '"
+                data-fname="' . $item->f_name . '" data-lname="' . $item->l_name . '">View Details</button>'
+
+            ];
+
+        echo json_encode([
+            "draw" => intval($draw),
+            "recordsTotal" => intval($totalData),
+            "recordsFiltered" => intval($totalFiltered),
+            "data" => $rows,
+        ]);
     }
 }

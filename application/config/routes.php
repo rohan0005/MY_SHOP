@@ -77,3 +77,14 @@ $route['get_product_ss'] = 'product/all_product_ss';
 
 
 $route['productSS'] = 'product/new_product_page';
+
+$route['get_all_orders'] = 'order/all_orders_with_details';
+
+$route['all-orders'] = 'order/all_order_page';
+
+
+// USERS
+
+$route['user-details'] = 'users/users_details_page_ss';
+
+$route['all-users'] = 'users/get_user_details_ss';
