@@ -23,38 +23,51 @@ class ProductModel extends CI_Model
     public function add_product($image_name = '')
     {
         $product_name = $this->input->post("productName");
-        $price = $this->input->post("productPrice");
-        $stock = $this->input->post("productStock");
+        $price = (float) $this->input->post("productPrice");
+        $stock = (int) $this->input->post("productStock");
         $warehouse = $this->input->post("productWarehouse");
         $supplier = $this->input->post("productSupplier");
 
-        if ($price <= 0 || $stock <= 0) {
-            throw new Exception("Price or Stock is invalid!!");
+        $this->db->trans_begin();
+        $this->inventory_db->trans_begin();
+
+        try {
+            if ($price <= 0 || $stock <= 0) {
+                throw new Exception("Price or Stock is invalid!!");
+            }
+
+            // FIRST SAVE ON PRODUCT TABLE
+            $NewProduct = array(
+                'p_name' => $product_name,
+                'price' => $price,
+                'image' => $image_name, //saving the image file name
+
+            );
+
+            $this->db->insert("product", $NewProduct);
+            $p_id = $this->db->insert_id();
+
+            // NOW SAVE ON INVENTORY TABLE.
+
+            $newInventoryItem = array(
+                'product_id' => $p_id,
+                'stock' => $stock,
+                'warehouse_location' => $warehouse,
+                'supplier_name' => $supplier,
+            );
+
+            $this->inventory_db->insert('inventory', $newInventoryItem);
+
+            $this->db->trans_commit();
+            $this->inventory_db->trans_commit();
+
+            return true;
+        } catch (Exception $e) {
+            $this->db->trans_rollback();  //rollback on any error
+            $this->inventory_db->trans_rollback();  //rollback on any error
+
+            return ['error' => $e->getMessage()];
         }
-
-        // FIRST SAVE ON PRODUCT TABLE
-        $NewProduct = array(
-            'p_name' => $product_name,
-            'price' => $price,
-            'image' => $image_name, //saving the image file name
-
-        );
-
-        $this->db->insert("product", $NewProduct);
-        $p_id = $this->db->insert_id();
-
-        // NOW SAVE ON INVENTORY TABLE.
-
-        $newInventoryItem = array(
-            'product_id' => $p_id,
-            'stock' => $stock,
-            'warehouse_location' => $warehouse,
-            'supplier_name' => $supplier,
-        );
-
-        $this->inventory_db->insert('inventory', $newInventoryItem);
-
-        return true;
     }
 
 
@@ -143,9 +156,8 @@ class ProductModel extends CI_Model
             $this->db->or_like('i.warehouse_location', $search);
             $this->db->or_like('i.supplier_name', $search);
             $this->db->group_end();
-
-
-            return $this->db->count_all_results();
         }
+
+        return $this->db->count_all_results();
     }
 }

@@ -178,14 +178,6 @@ class Product extends MY_Controller
         $totalData = $this->ProductModel->count_all_products_with_stock();
         $totalFilteredData = $this->ProductModel->count_filtered_products_with_stock($search);
 
-        die(json_encode([
-            "draw"         => intval($draw),
-            "recordsTotal" => 9,
-            "recordsFiltered" => 9,
-            "data"         => $data,  // ✅ See raw data
-            "count"        => count($data),
-        ]));
-
         $rows = array();
 
         foreach ($data as $item) {
