@@ -51,43 +51,57 @@ class Product extends MY_Controller
 
         $this->form_validation->set_rules('productName', 'Product Name', 'required');
         $this->form_validation->set_rules('productPrice', 'Price', 'required');
+        $this->form_validation->set_rules('productWarehouse', 'Warehouse', 'required');
+        $this->form_validation->set_rules('productStock', 'Stock', 'required');
+        $this->form_validation->set_rules('productSupplier', 'Supplier', 'required');
 
-        if ($this->form_validation->run() == FALSE) {
+        try {
 
-            echo json_encode([
-                'success' => false,
-                'message' => strip_tags(validation_errors()),
-            ]);
-        } else {
-            // upload product image
+            if ($this->form_validation->run() == FALSE) {
 
-            $config['upload_path']          = './uploads/';
-            $config['allowed_types']        = 'gif|jpg|png';
-            $config['max_size']             = 10240;  //KB
-            $config['max_width']            = 0;
-            $config['max_height']           = 0;
+                $errors = explode("\n", trim(strip_tags(validation_errors())));
 
-            // $this->load->library('upload', $config);
-
-            $this->upload->initialize($config); // using initialize 
-
-            if (! $this->upload->do_upload('productImage'))   //default method do_upload()
-            {
                 echo json_encode([
                     'success' => false,
-                    'message' => strip_tags($this->upload->display_errors()),
+                    'message' => $errors[0],
 
                 ]);
-            } else //call model
-            {
-                $uploaded_data = $this->upload->data();
-                $this->ProductModel->add_product($uploaded_data['file_name']);
+            } else {
+                // upload product image
 
-                echo json_encode([
-                    'success' => true,
-                    'message' => "New Product Added!!",
-                ]);
+                $config['upload_path']          = './uploads/';
+                $config['allowed_types']        = 'gif|jpg|png';
+                $config['max_size']             = 10240;  //KB
+                $config['max_width']            = 0;
+                $config['max_height']           = 0;
+
+                // $this->load->library('upload', $config);
+
+                $this->upload->initialize($config); // using initialize 
+
+                if (! $this->upload->do_upload('productImage'))   //default method do_upload()
+                {
+                    echo json_encode([
+                        'success' => false,
+                        'message' => strip_tags($this->upload->display_errors()),
+
+                    ]);
+                } else //call model
+                {
+                    $uploaded_data = $this->upload->data();
+                    $this->ProductModel->add_product($uploaded_data['file_name']);
+
+                    echo json_encode([
+                        'success' => true,
+                        'message' => "New Product Added!!",
+                    ]);
+                }
             }
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
         }
     }
 

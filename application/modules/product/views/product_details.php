@@ -54,8 +54,6 @@ include(APPPATH . "modules/product/views/view_product_image_modal.php");
 
     })
 
-
-
     // ADDING NEW PRODUCT  
 
 
@@ -64,9 +62,10 @@ include(APPPATH . "modules/product/views/view_product_image_modal.php");
         e.preventDefault(); // Prevent form submission/page reload
 
 
-        console.log($("#productName").val());
-        console.log($("#productPrice").val());
-        console.log($("#productImage")[0].files[0]);
+        var productWarehouse = ($("#productWarehouse").val());
+        var productStock = ($("#productStock").val());
+        var productSupplier = ($("#productSupplier").val());
+
 
         var productName = $("#productName").val();
         var productPrice = $("#productPrice").val();
@@ -75,6 +74,9 @@ include(APPPATH . "modules/product/views/view_product_image_modal.php");
 
         formData.append("productName", productName);
         formData.append("productPrice", productPrice);
+        formData.append("productWarehouse", productWarehouse);
+        formData.append("productStock", productStock);
+        formData.append("productSupplier", productSupplier);
 
         var file = $("#productImage")[0].files[0];
 
@@ -94,11 +96,21 @@ include(APPPATH . "modules/product/views/view_product_image_modal.php");
 
             success: function(response) {
 
-                $("#addProductModal").modal("hide");
+                if (response.success) {
+                    $("#addProductModal").modal("hide");
 
-                loadProduct()
-                showToast(response.message);
+                    loadProduct()
+                    showToast(response.message);
+                } else {
 
+                    $("#productName").val("");
+                    $("#productPrice").val("");
+                    $("#productStock").val("");
+                    $("#productWarehouse").val("");
+                    $("#productSupplier").val("");
+
+                    showToast(response.message, 'error');
+                }
             },
 
             error: function(xhr, status, error) {
@@ -119,15 +131,10 @@ include(APPPATH . "modules/product/views/view_product_image_modal.php");
 
             success: function(response) {
                 if (response.success) {
-                    // console.log("all products", response.data), 
-
-
 
                     // loop to fetch all products:
 
                     productTable.clear();
-
-
                     $.each(response.data, function(index, item) {
 
                         productTable.row.add([

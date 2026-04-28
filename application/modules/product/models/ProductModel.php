@@ -24,7 +24,15 @@ class ProductModel extends CI_Model
     {
         $product_name = $this->input->post("productName");
         $price = $this->input->post("productPrice");
+        $stock = $this->input->post("productStock");
+        $warehouse = $this->input->post("productWarehouse");
+        $supplier = $this->input->post("productSupplier");
 
+        if ($price <= 0 || $stock <= 0) {
+            throw new Exception("Price or Stock is invalid!!");
+        }
+
+        // FIRST SAVE ON PRODUCT TABLE
         $NewProduct = array(
             'p_name' => $product_name,
             'price' => $price,
@@ -33,6 +41,19 @@ class ProductModel extends CI_Model
         );
 
         $this->db->insert("product", $NewProduct);
+        $p_id = $this->db->insert_id();
+
+        // NOW SAVE ON INVENTORY TABLE.
+
+        $newInventoryItem = array(
+            'product_id' => $p_id,
+            'stock' => $stock,
+            'warehouse_location' => $warehouse,
+            'supplier_name' => $supplier,
+        );
+
+        $this->inventory_db->insert('inventory', $newInventoryItem);
+
         return true;
     }
 
