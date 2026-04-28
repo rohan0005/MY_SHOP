@@ -7,7 +7,7 @@
       </div>
       <form id="addProductForm" enctype="multipart/form-data">
 
-      <div class="modal-body">
+        <div class="modal-body">
           <div class="mb-1">
             <label class="col-form-label">Product Name:</label>
             <input type="text" class="form-control" id="productName">
@@ -17,23 +17,36 @@
             <input type="number" min=1 class="form-control" id="productPrice">
           </div>
 
+          <div class="mb-1">
+            <label class="col-form-label">Stock:</label>
+            <input type="number" min=1 class="form-control" id="productStock">
+          </div>
+
+          <div class="mb-1">
+            <label class="col-form-label">Warehouse Location:</label>
+            <input type="text" class="form-control" id="productWarehouse">
+          </div>
+
+          <div class="mb-1">
+            <label class="col-form-label">Supplier Name:</label>
+            <input type="text" class="form-control" id="productSupplier">
+          </div>
+
           <!-- IMAGE UPLOAD -->
-          
+
           <div class="mb-1">
             <label class="col-form-label">Product Image:</label>
             <input type="file" class="form-control" id="productImage" name="productImage">
-        </div>
+          </div>
 
-          
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="submit" value="upload" id="addProductBtn" class="btn btn-primary ">Add Product</button>
-      </div>
-        </form>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" value="upload" id="addProductBtn" class="btn btn-primary ">Add Product</button>
+        </div>
+      </form>
 
     </div>
   </div>
-</div> 
-
-
+</div>

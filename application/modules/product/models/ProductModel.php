@@ -2,6 +2,17 @@
 
 class ProductModel extends CI_Model
 {
+
+    protected $inventory_db;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        //loading second db
+        $this->inventory_db = $this->load->database('inventory_db', TRUE);
+    }
+
     public function get_products()
     {
         $query = $this->db->get("product");
@@ -59,5 +70,61 @@ class ProductModel extends CI_Model
         }
 
         return $this->db->count_all_results();
+    }
+
+
+    public function get_products_with_stocK($start, $length, $search)
+    {
+        $this->db->reset_query();
+
+        $this->db->select("product.id, product.p_name, product.price, i.stock, i.warehouse_location, i.supplier_name");
+
+        $this->db->from("shop_db.product");
+        $this->db->join("shop_inventory_db.inventory i", "product.id = i.product_id", "left"); // LEFT JOIN
+
+        if ($search) {
+            $this->db->group_start();
+            $this->db->like('product.p_name', $search);
+            $this->db->or_like('product.price', $search);
+            $this->db->or_like('i.warehouse_location', $search);
+            $this->db->or_like('i.supplier_name', $search);
+            $this->db->group_end();
+        }
+
+
+        $this->db->limit($length, $start);
+        return $this->db->get()->result();
+    }
+
+
+    public function count_all_products_with_stock()
+    {
+        $this->db->reset_query();
+
+        $this->db->from("shop_db.product");
+        // $this->db->join("shop_inventory_db.inventory i", "shop_db.product.id= i.product_id", "left");
+
+        return $this->db->count_all_results();
+    }
+
+
+    public function count_filtered_products_with_stock($search)
+    {
+        $this->db->reset_query();
+
+        $this->db->from("shop_db.product");
+        $this->db->join("shop_inventory_db.inventory i", "shop_db.product.id = i.product_id", "left");
+
+        if ($search) {
+            $this->db->group_start();
+            $this->db->like('product.p_name', $search);
+            $this->db->or_like('product.price', $search);
+            $this->db->or_like('i.warehouse_location', $search);
+            $this->db->or_like('i.supplier_name', $search);
+            $this->db->group_end();
+
+
+            return $this->db->count_all_results();
+        }
     }
 }

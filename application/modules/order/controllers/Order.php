@@ -48,11 +48,13 @@ class Order extends MY_Controller
 
         $result = $this->OrdersModel->place_order();
 
-        if (!$result) {
+        if (isset($result['error'])) {
             echo json_encode([
                 'success' => false,
-                'message' => "Database error occurred."
+                'message' => $result['error'],
             ]);
+
+            return;
         }
 
 

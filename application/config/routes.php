@@ -88,3 +88,11 @@ $route['all-orders'] = 'order/all_order_page';
 $route['user-details'] = 'users/users_details_page_ss';
 
 $route['all-users'] = 'users/get_user_details_ss';
+
+
+
+//2 db
+
+$route['getProductAndStock'] = 'product/get_products_and_stock';
+
+$route['productAndStockPage'] = 'product/products_page_with_stock'; //page

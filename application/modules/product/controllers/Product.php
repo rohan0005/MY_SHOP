@@ -13,6 +13,9 @@ class Product extends MY_Controller
         $this->load->helper(array('form', 'url'));
         //upload 
         $this->load->library('upload');
+
+        //load second database
+        $db2 = $this->load->database('inventory_db', TRUE);  // TRUE = DO NOT REPLACE DEFAULT DB.
     }
 
     public function get_product_page()
@@ -106,11 +109,6 @@ class Product extends MY_Controller
         $length = $_POST['length'];
         $searchPost = $_POST['search'];
 
-
-        // $draw = $this->input->post('draw');
-        // $start = $this->input->post('start');
-        // $length = $this->input->post('length');
-        // $searchPost = $this->input->post('search');
         $search = isset($searchPost['value']) ? $searchPost['value'] : '';
 
 
@@ -136,6 +134,63 @@ class Product extends MY_Controller
             "recordsTotal" => intval($totalData),
             "recordsFiltered" => intval($totalFilteredData),
             "data" => $rows,
+        ]);
+    }
+
+
+
+
+    // SS PRODUCT AND STOCK
+
+    public function products_page_with_stock()
+    {
+        $page['page_content'] = 'product/product_and_stock';
+
+        $this->load->view("template/global_template", $page);
+        $this->load->view("template/footer");
+    }
+
+    public function get_products_and_stock()
+    {
+
+        $draw = $this->input->post('draw');
+        $start = $this->input->post('start');
+        $length = $this->input->post('length');
+        $searchPost = $this->input->post('search');
+        $search = isset($searchPost['value']) ? $searchPost['value'] : '';
+
+
+        $data = $this->ProductModel->get_products_with_stocK($start, $length, $search);
+        $totalData = $this->ProductModel->count_all_products_with_stock();
+        $totalFilteredData = $this->ProductModel->count_filtered_products_with_stock($search);
+
+        die(json_encode([
+            "draw"         => intval($draw),
+            "recordsTotal" => 9,
+            "recordsFiltered" => 9,
+            "data"         => $data,  // ✅ See raw data
+            "count"        => count($data),
+        ]));
+
+        $rows = array();
+
+        foreach ($data as $item) {
+            $rows[] = array(
+                'id' => $item->id,
+                'p_name' => $item->p_name,
+                'price' => $item->price,
+                'stock' => $item->stock,
+                'warehouse_location' => $item->warehouse_location,
+                'supplier_name' => $item->supplier_name
+            );
+        }
+
+        echo json_encode([
+            "draw" => intval($draw),
+            "recordsTotal" => intval($totalData),
+            "recordsFiltered" => intval($totalFilteredData),
+            "data" => $rows,
+
         ]);
     }
 }

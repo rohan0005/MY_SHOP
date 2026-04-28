@@ -2,121 +2,171 @@
 
 class OrdersModel extends CI_Model
 {
+    protected $inventory_db;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->inventory_db = $this->load->database('inventory_db', TRUE);
+        // $this->db = $this->load->database('shop_db');
+    }
 
     public function place_order()
     {
         $products = $this->input->post('products');
 
+        try {
 
-        $this->db->trans_start();   // It allows to group multiple database queries together so that they either all succeed or all fail as a single unit.
+            $this->db->trans_begin();   // It allows to group multiple database queries together so that they either all succeed or all fail as a single unit.
 
-        $grand_total = 0;
-        $product_list = [];
+            $grand_total = 0;
+            $product_list = [];
 
-        if (!empty($products) && is_array($products)) {
+            if (!empty($products) && is_array($products)) {
 
-            foreach ($products as $product) {
-                $product_id = (int) $product['id'];
-                $quantity = (int) $product['quantity'];
-                $price = (float) $product['price'];
-
-                $total = $quantity * $price;
-
-                if ($quantity > 0 && $price >= 0) {
-                    $grand_total += $quantity * $price;
-                }
-
-                $product_list[] = [
-                    'name'     => $product['name'],
-                    'quantity' => $quantity,
-                    'price'    => $price,
-                    'total'    => $total
-                ];
-            }
-        }
-
-        // Check if user already exists
-
-        $phone = $this->input->post("phone");
-
-        $this->db->where("phone", $phone);
-        $existing_user = $this->db->get("users")->row();
-
-        if ($existing_user) {
-            //user exist
-            $user_id = $existing_user->id;
-        } else {
-
-            $userData = array(
-
-                'f_name' => $this->input->post("f_name"),
-                'l_name' => $this->input->post("l_name"),
-                'phone' => $this->input->post("phone"),
-                'created_at' => date("Y-m-d H:i:s"),
-                'email' => $this->input->post("email"),
+                foreach ($products as $product) {
+                    $product_id = (int) $product['id'];
+                    $quantity = (int) $product['quantity'];
+                    $price = (float) $product['price'];
 
 
-            );
+                    //check if there is stock of this product...
+                    if ($quantity > 0) {
+                        // $stock =  " ";
+                        // $query = $this->db->inventory_db->query("SELECT stock from inventory_db.inventory where product_id= '$product_id'");
 
-            $this->db->insert('users', $userData);
-            $user_id = $this->db->insert_id();      // getting the USER id after insert.
-        }
+                        $this->inventory_db->select('stock');
+                        $this->inventory_db->from('inventory');
+                        $this->inventory_db->where('product_id', $product_id);
 
+                        $query = $this->inventory_db->get();
+                        $row = $query->row();
 
+                        // SHOW THE PRODUCT NAME.
+                        $this->db->select('p_name');
+                        $this->db->from('product');
+                        $this->db->where('id', $product_id);
 
-        // NOW INSERT INTO ORDER TABLE:
-        $orderData = array(
-            // 'p_id' => $p_id,
-            'user_id' => $user_id,
-            // 'quantity' => x$this->input->post("quantity"),
-            'total_price' => $grand_total,
-            'status' => "pending",
-        );
-        $this->db->insert("orders", $orderData);
-
-        //get the id of orders
-        $order_ID = $this->db->insert_id();
-
+                        $query2 = $this->db->get();
+                        $ProductRow = $query2->row();
 
 
-        if (!empty($products) && is_array($products)) {
+                        if ($row) {
+                            $current_stock = (int) $row->stock;
 
-            foreach ($products as $product) {
-                $product_id = (int) $product['id'];
-                $quantity = (int) $product['quantity'];
-                $price = (float) $product['price'];
-                $total = $quantity * $price;
+                            $productName = $ProductRow->p_name;
 
 
-                $itemData =
-                    [
-                        'order_id' => $order_ID,
-                        'p_id' => $product_id,
-                        'price' => $total,
+                            if ($quantity > $current_stock) {
+                                throw new Exception("Not enough Stock Available for: " . $productName);
+                            } else {
+                                $newQuantity = $current_stock - $quantity;
+
+                                $this->inventory_db->where('product_id', $product_id);
+                                $this->inventory_db->update('inventory', ['stock' => $newQuantity]);
+                            }
+                        } else {
+                            throw new Exception("Product ID: " . $product_id . " not found in inventory.");
+                        }
+                    }
+
+
+                    $total = $quantity * $price;
+
+                    if ($quantity > 0 && $price >= 0) {
+                        $grand_total += $quantity * $price;
+                    }
+
+                    $product_list[] = [
+                        'name'     => $product['name'],
                         'quantity' => $quantity,
+                        'price'    => $price,
+                        'total'    => $total
                     ];
-
-                $this->db->insert('order_items', $itemData);
+                }
             }
+
+
+
+            // Check if user already exists
+
+            $phone = $this->input->post("phone");
+
+            $this->db->where("phone", $phone);
+            $existing_user = $this->db->get("users")->row();
+
+            if ($existing_user) {
+                //user exist
+                $user_id = $existing_user->id;
+            } else {
+
+                $userData = array(
+
+                    'f_name' => $this->input->post("f_name"),
+                    'l_name' => $this->input->post("l_name"),
+                    'phone' => $this->input->post("phone"),
+                    'created_at' => date("Y-m-d H:i:s"),
+                    'email' => $this->input->post("email"),
+
+
+                );
+
+                $this->db->insert('users', $userData);
+                $user_id = $this->db->insert_id();      // getting the USER id after insert.
+            }
+
+
+
+            // NOW INSERT INTO ORDER TABLE:
+            $orderData = array(
+                // 'p_id' => $p_id,
+                'user_id' => $user_id,
+                // 'quantity' => x$this->input->post("quantity"),
+                'total_price' => $grand_total,
+                'status' => "pending",
+            );
+            $this->db->insert("orders", $orderData);
+
+            //get the id of orders
+            $order_ID = $this->db->insert_id();
+
+
+
+            if (!empty($products) && is_array($products)) {
+
+                foreach ($products as $product) {
+                    $product_id = (int) $product['id'];
+                    $quantity = (int) $product['quantity'];
+                    $price = (float) $product['price'];
+                    $total = $quantity * $price;
+
+
+                    $itemData =
+                        [
+                            'order_id' => $order_ID,
+                            'p_id' => $product_id,
+                            'price' => $total,
+                            'quantity' => $quantity,
+                        ];
+
+                    $this->db->insert('order_items', $itemData);
+                }
+            }
+
+
+            $this->db->trans_commit();
+
+            return [
+                'order_id'    => $order_ID,
+                'items'       => $product_list,
+                'grand_total' => $grand_total
+            ];;
+        } catch (Exception $e) {
+            $this->db->trans_rollback();  //rollback on any error
+
+            return ['error' => $e->getMessage()];
         }
-
-
-        $this->db->trans_complete();
-
-
-        if ($this->db->trans_status() === FALSE) {
-            $error = $this->db->error();
-            print_r($error);   // TEMPORARY DEBUG
-            exit;
-
-            return false;
-        }
-
-        return [
-            'order_id'    => $order_ID,
-            'items'       => $product_list,
-            'grand_total' => $grand_total
-        ];;
     }
 
     public function view_all_orders()

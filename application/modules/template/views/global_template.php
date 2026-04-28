@@ -43,6 +43,12 @@
                 <h6 class="text-success">SS All USERS</h6>
             </a>
 
+            <a class="navbar-brand" href="<?php echo base_url("productAndStockPage") ?>">
+                <h6 class="text-success">Product And Stock</h6>
+            </a>
+
+
+
 
             <form class="d-flex">
                 <?php if ($this->uri->segment(1) == '' || $this->uri->segment(1) == 'home') { ?>
@@ -89,6 +95,7 @@
         class="container mt-5">
 
         <?php $this->load->view($page_content); ?>
+
     </div>
 
 
